@@ -1,0 +1,240 @@
+\section{Consulting Company Database Exercise}
+
+\subsection{Introduction}
+This chapter present a practical database design exercise for a consulting company. The objective is to translate a set of real-world business requirements into a structured conceptual schema (E-R Model).
+
+The database must store and manage information about:
+\begin{itemize}
+    \item \textbf{Clients}.
+    \item \textbf{Employees}.
+    \item \textbf{Projects}.
+    \item The relationships and interactions among them.
+\end{itemize}
+
+\subsection{Conceptual Schema Overview}
+The first image provides a high-level graphical overview of the domain. 
+
+\begin{defbox}{Conceptual Schema}
+A high-level, abstract representation of the data within a system, showcasing the main entities, their attributes, and the logical relationships connecting them.
+\end{defbox}
+
+\begin{figure}[h!]
+\centering
+\resizebox{0.97\textwidth}{!}{%
+\begin{tikzpicture}[
+    x=1.4cm,
+    y=1.4cm,
+    every node/.style={font=\Large\sffamily},
+    entity/.style={rectangle, draw, thick, minimum width=3.2cm, minimum height=1.2cm, fill=gray!20},
+    relation/.style={diamond, draw, thick, aspect=2, minimum width=3.2cm, minimum height=1.2cm, fill=gray!10},
+    attrdot/.style={circle, draw, thick, fill=white, minimum size=0.22cm, inner sep=0pt},
+    mattr/.style={ellipse, draw, thick, minimum width=3.2cm, minimum height=1.1cm, fill=gray!10}
+]
+
+%==================== ENTITIES ====================
+\node[entity] (emp)  at (0,4.3) {\textbf{Employee}};
+\node[entity] (dep)  at (7.3,4.3) {\textbf{Department}};
+\node[entity] (proj) at (1.1,0.3) {\textbf{Project}};
+\node[entity] (office) at (7.1,-0.25) {\textbf{Office}};
+
+%==================== RELATIONS ====================
+\node[relation] (dir) at (3.7,5.85) {\textbf{Management}};
+\node[relation] (aff) at (3.7,3.55) {\textbf{Affiliation}};
+\node[relation] (ass) at (1.1,2.2) {\textbf{Assignment}};
+\node[relation] (loc) at (6.35,2.2) {\textbf{Location}};
+
+%==================== COMPOSITE ATTRIBUTE ====================
+\node[mattr] (addr) at (5.95,-2.1) {\textbf{Address}};
+
+%==================== ATTRIBUTE DOTS ====================
+\node[attrdot] (surname) at (-1.55,5.75) {};
+\node[attrdot] (empid)   at (-1.45,3.45) {};
+\node[attrdot] (phone)   at (9.0,5.45) {};
+\node[attrdot] (depname) at (9.15,3.75) {};
+\node[attrdot] (datea)   at (3.7,1.7) {};
+\node[attrdot] (pname)   at (-0.55,-0.65) {};
+\node[attrdot] (pcode)   at (2.25,-0.65) {};
+\node[attrdot] (street)  at (5.15,-1.45) {};
+\node[attrdot] (zip)     at (5.15,-3.0) {};
+\node[attrdot] (city)    at (8.0,-1.7) {};
+
+%==================== CONNECTIONS ====================
+\draw[thick] (emp) -- (dir);
+\draw[thick] (dep) -- (dir);
+
+\draw[thick] (emp) -- (aff);
+\draw[thick] (dep) -- (aff);
+
+\draw[thick] (emp) -- (ass);
+\draw[thick] (ass) -- (proj);
+
+\draw[thick] (dep) -- (loc);
+\draw[thick] (loc) -- (office);
+
+\draw[thick] (surname) -- (emp);
+\draw[thick] (empid) -- (emp);
+\draw[thick] (phone) -- (dep);
+\draw[thick] (depname) -- (dep);
+\draw[thick] (datea) -- (aff);
+\draw[thick] (pname) -- (proj);
+\draw[thick] (pcode) -- (proj);
+
+\draw[thick] (office) -- (addr);
+\draw[thick] (street) -- (addr);
+\draw[thick] (zip) -- (addr);
+\draw[thick] (city) -- (addr);
+
+%==================== ATTRIBUTE LABELS ====================
+\node[anchor=east] at (-1.95,5.95) {\textbf{Surname}};
+\node[anchor=east] at (-1.85,3.25) {\textbf{Employee ID}};
+\node[anchor=west] at (9.35,5.7) {\textbf{Phone}};
+\node[anchor=west] at (9.5,3.5) {\textbf{Name}};
+\node[anchor=north] at (3.7,1.38) {\textbf{Date}};
+\node[anchor=east] at (-0.8,-0.78) {\textbf{Name}};
+\node[anchor=west] at (2.45,-0.78) {\textbf{Code}};
+\node[anchor=east] at (4.88,-1.4) {\textbf{Street}};
+\node[anchor=east] at (4.9,-3.15) {\textbf{ZIP}};
+\node[anchor=west] at (8.3,-1.72) {\textbf{City}};
+
+%==================== CARDINALITIES ====================
+\node at (2.4,6.35) {\textbf{(0,1)}};
+\node at (4.95,6.35) {\textbf{(1,1)}};
+
+\node at (2.2,4.45) {\textbf{(0,1)}};
+\node at (5.05,4.45) {\textbf{(0,N)}};
+
+\node at (0.25,3.0) {\textbf{(0,N)}};
+\node at (1.05,1.18) {\textbf{(1,N)}};
+
+\node at (5.62,3.8) {\textbf{(1,1)}};
+\node at (6.22,1.28) {\textbf{(1,N)}};
+
+\node at (4.08,2.05) {\textbf{(0,1)}};
+\node at (9.15,4.95) {\textbf{(1,N)}};
+
+\end{tikzpicture}%
+}
+\end{figure}
+
+From the initial overview, we can identify the core entities and their primary identifiers:
+\begin{itemize}
+    \item \textbf{Office}.
+    \item \textbf{Employee} identified by \texttt{Employee Number}.
+    \item \textbf{Project } identified by \texttt{Project Code}.
+\end{itemize}
+
+The schema also introduces key relationships such as \textbf{Location }, \textbf{Management}, and \textbf{Assignment}.
+
+\begin{defbox}{Cardinality}
+A rule specifying the minimum and maximum number of times an occurrence of an entity can participate in a specific relationship (e.g., $(1,1)$, $(0,N)$).
+\end{defbox}
+
+
+
+\subsection{Database Requirements Analysis}
+This chapter provides the textual business rules that must be modeled. A project is defined as a commissioned job that is either currently in progress or already completed.
+
+\subsubsection{Clients}
+\begin{defbox}{Client}
+A public or private company that commissions a project to the consulting firm.
+\end{defbox}
+
+\begin{defbox}{Entity Identifier}
+An attribute, or set of attributes, that uniquely distinguishes each occurrence of an entity.
+\end{defbox}
+
+\textbf{Client Requirements:}
+\begin{itemize}
+    \item \textbf{Identifier:} \texttt{VAT Number} (Partita IVA).
+    \item \textbf{Attributes:} Company Name, Owner, Phone Number, Email (Optional).
+    \item \textbf{Composite Attribute:} Address (City, Province, Street, Street Number, Postal Code).
+\end{itemize}
+
+\subsubsection{Projects}
+\begin{defbox}{Project}
+A commissioned job identified by a unique code, requested by exactly one client, and executed by one or more employees.
+\end{defbox}
+
+\textbf{Project Requirements:}
+\begin{itemize}
+    \item \textbf{Identifier:} \texttt{Code}.
+    \item \textbf{Attributes:} Name, Description, Type, Acronym, Cost, Specifications (Optional), Request/Start Date, Delivery Date.
+\end{itemize}
+
+\textbf{The Assignment Relationship:}
+The requirements state we must track which employees are assigned to which project, \textit{and what their role is on that specific project}.
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Relationship Attributes}}
+Suppose Project P101 is "Software Upgrade".
+\begin{itemize}
+    \item Employee Alice is assigned to P101. Her role is \textit{Project Manager}.
+    \item Employee Marco is assigned to P101. His role is \textit{Analyst Programmer}.
+\end{itemize}
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \node[draw, rectangle, minimum width=2cm, minimum height=1cm, thick] (emp) at (0,0) {Employee};
+  \node[draw, diamond, aspect=2, minimum width=2cm, minimum height=1cm, thick] (ass) at (4,0) {Assignment};
+  \node[draw, rectangle, minimum width=2cm, minimum height=1cm, thick] (proj) at (8,0) {Project};
+  \node[draw, ellipse, inner sep=2pt] (role) at (4,1.5) {Role};
+  
+  \draw[thick] (emp) -- (ass);
+  \draw[thick] (ass) -- (proj);
+  \draw[thick] (ass) -- (role);
+\end{tikzpicture}
+\end{center}
+Because Alice could be an Analyst on a different project, \texttt{Role} is an attribute of the \textbf{Assignment} relationship, not the Employee entity.
+\end{example}
+
+\subsubsection{Activities (\textit{Attività})}
+
+
+Each project is broken down into smaller tasks called activities.
+
+\textbf{Activity Requirements:}
+\begin{itemize}
+    \item \textbf{Attributes:} Name, Description, Type, Start Date, End Date, Termination Info, Technical Report.
+\end{itemize}
+
+\begin{defbox}{Weak Identification (External Identifier)}
+A situation where an entity cannot be uniquely identified by its own attributes alone, and must borrow the identifier of a parent entity it is strongly related to.
+\end{defbox}
+
+An Activity is identified by a "progressive numeric value" (e.g., Task 1, Task 2). However, every project has a "Task 1". Therefore, the true identifier for an Activity is composite:
+$$(\text{Project Code}, \text{Progressive Number})$$
+
+\subsubsection{Employee Requirements}
+
+\begin{itemize}
+    \item \textbf{Identifier:} \texttt{Registration Number} (Matricola).
+    \item \textbf{Attributes:} Surname, Name, Date of Birth, Tax Code, Professional Qualification, Email (Optional).
+    \item \textbf{Multivalued Attribute:} Phone Numbers (can have one or more).
+    \item \textbf{Composite Attribute:} Address.
+\end{itemize}
+
+\begin{defbox}{Many-to-Many Relationship (N:M)}
+A relationship where one occurrence of Entity A can be associated with many occurrences of Entity B, and vice versa. 
+\end{defbox}
+
+The relationship between Employees and Projects is N:M, as one employee works on multiple projects, and one project employs multiple people.
+
+\subsubsection{Summary of the Core Entities}
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Entity} & \textbf{Main Identifier} & \textbf{Key Characteristics} \\
+\hline
+Client & VAT Number & Commissions the project. \\
+Employee & Registration Number & Works on projects (N:M). Has multivalued phone numbers. \\
+Project & Project Code & Belongs to 1 client. Divided into activities. \\
+Activity & Project Code + Task \# & Weak entity dependent on a Project. \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsubsection{Final Summary}
+This exercise models a classic business scenario:
+$$\text{Client} \xrightarrow{\text{commissions}} \text{Project} \xrightarrow{\text{contains}} \text{Activity}$$
+Meanwhile, \textbf{Employees} are linked to \textbf{Projects} through an assignment relationship that tracks their specific roles. This textual breakdown provides all the necessary rules to build a formal E-R diagram.

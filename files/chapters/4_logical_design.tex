@@ -1,0 +1,698 @@
+
+
+%!TEX root = ../main.tex
+
+
+\section{Logical Design}
+
+\subsection{Introduction to Logical Design}
+
+Once the conceptual design (E-R model) is complete, we move to the next phase of database creation. The E-R model is excellent for human understanding but cannot be directly implemented by a DBMS. 
+
+\begin{defbox}{Logical Design}
+The phase where the abstract conceptual schema is transformed into a concrete data representation model (the \textbf{logical schema}), bridging the gap between human logic and machine structure.
+\end{defbox}
+
+Logical design consists of two main activities:
+\begin{enumerate}
+    \item \textbf{Restructuring:} Cleaning up and simplifying the E-R schema so it fits the rules of the target model (e.g., the Relational Model).
+    \item \textbf{Translation:} Converting the restructured E-R elements into actual tables, primary keys, and foreign keys.
+\end{enumerate}
+
+\subsection{Phase 1: Restructuring the E-R Schema}
+Restructuring is not merely a mechanical translation; it requires active design choices to optimize the database.
+
+\begin{defbox}{Restructuring}
+The process of modifying the conceptual schema to eliminate constructs that cannot be directly translated into the logical model and to improve overall efficiency.
+\end{defbox}
+
+The main steps of restructuring include:
+\begin{itemize}
+    \item Eliminating composite and multivalued attributes.
+    \item Choosing the primary identifiers (Primary Keys).
+    \item Partitioning or merging entities and relationships.
+    \item Analyzing and resolving redundancies.
+\end{itemize}
+
+\subsubsection{Elimination of Composite and Multivalued Attributes}
+The Relational Model operates under a strict rule known as the \textbf{First Normal Form (1NF)}, which dictates that every attribute in a table must hold a single, indivisible (atomic) value. 
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Resolving a Composite Attribute}}
+
+\textbf{Problem:} The attribute \texttt{Address} contains \texttt{Street}, \texttt{Number}, and \texttt{ZIPCode}.\\
+\textbf{Restructuring Solution:} Delete the parent \texttt{Address} attribute and attach the simple components (\texttt{Street}, \texttt{Number}, \texttt{ZIPCode}) directly to the entity.
+\end{example}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Resolving a Multivalued Attribute}}
+
+\textbf{Problem:} An \texttt{Employee} has a multivalued attribute \texttt{PhoneNumbers} (they could have 0, 1, or 5 numbers).\\
+\textbf{Restructuring Solution:} 
+\begin{enumerate}
+    \item Remove \texttt{PhoneNumbers} from the \texttt{Employee} entity.
+    \item Create a brand new entity called \texttt{Phone}.
+    \item Connect \texttt{Employee} to \texttt{Phone} with a One-to-Many (1:N) relationship.
+\end{enumerate}
+\end{example}
+
+\subsubsection{Choosing Identifiers}
+Every entity in a relational database must have a clear, unambiguous way to identify its rows. If an entity has multiple candidate identifiers in the E-R phase, the designer must select exactly one to be the \textbf{Main Identifier (Primary Key)}.
+
+\begin{defbox}{Main Identifier}
+The specific identifier chosen to be the primary reference for translations and for building physical access mechanisms (indexes) in the database.
+\end{defbox}
+
+
+When selecting among candidates, the designer evaluates them based on two criteria:
+
+\begin{enumerate}
+    \item \textbf{Uniqueness \& Reliability:} 
+    \begin{itemize}
+        \item The identifier must \textbf{never} contain \texttt{NULL} values. If an attribute is optional, it cannot be the Main Identifier.
+    \end{itemize}
+    \item \textbf{Efficiency:}
+    \begin{itemize}
+        \item \textbf{Size:} Identifiers with fewer attributes (or smaller data types like integers instead of long strings) are preferred because they create smaller, faster indexes.
+        \item \textbf{Usage:} Identifiers frequently used in application queries should be prioritized.
+    \end{itemize}
+\end{enumerate}
+
+
+Often, the natural data simply doesn't provide a good, efficient identifier. 
+
+\begin{defbox}{Artificial Identifier (Surrogate Key)}
+A completely new, system-generated attribute (like an auto-incrementing ID) added to an entity specifically to act as a clean, efficient Primary Key when natural attributes fail the criteria.
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Adding an Artificial Identifier}}
+
+A \texttt{Customer} entity has \texttt{Name}, \texttt{Surname}, and \texttt{Email}. \\
+\texttt{Name+Surname} is not unique. \texttt{Email} is unique, but string searches are slow, and emails can change.\\
+\textbf{Solution:} Add an artificial attribute called \texttt{CustomerID} (integer) to act as the Main Identifier.
+\end{example}
+
+\vs
+\textbf{Secondary Identifiers}
+
+What happens to the identifiers that were \textit{not} chosen as the Main Identifier? 
+
+\begin{defbox}{Secondary Identifier}
+A valid unique identifier that was not selected as the primary key. These remain important rules (translated as \texttt{UNIQUE} constraints in SQL) and are often used to build \textbf{Secondary Indexes} to speed up alternative search queries.
+\end{defbox}
+
+\subsection{Starting the Translation into the Relational Model}
+
+After the restructuring phase, the designer has an E-R schema that is clean, free of multivalued attributes, and ready for the physical world. The next step is the actual translation into the relational model.
+
+\begin{defbox}{Translation Phase}
+The step where the restructured E-R schema is systematically converted into the mathematical schema of the relational database.
+\end{defbox}
+
+         \begin{figure}[H] 
+        \centering\includegraphics[scale=0.5]{7.translation phase.jpg}
+        \caption{Etranslation phas}
+    \captionsetup{font=footnotesize}
+    \end{figure}
+
+\subsubsection{Terminology: \textit{Relations} vs \textit{Tables}}
+In the E-R model, \textit{Relationship} means the conceptual link between entities (the diamond). However, in relational algebra, a \textit{Relation} refers to the table itself. 
+
+\begin{defbox}{Table vs Relation}
+To avoid confusion during this phase, database engineers usually refer to the physical translation of data as \textbf{tables} rather than relations.
+\end{defbox}
+
+When writing a schema in text, we use this standard notation:
+$$\texttt{TableName(\underline{Primary\_Key}, Column2, Column3)}$$
+\subsubsection{Translation Rules: Entities}
+Translating an entity is the most straightforward part of the process.
+
+\vs
+\begin{defbox}{Rule 1: Translating an Entity}
+Every entity becomes a table. 
+\begin{itemize}
+    \item \textbf{Entity Name} $\rightarrow$ Table Name
+    \item \textbf{Attributes} $\rightarrow$ Table Columns
+    \item \textbf{Main Identifier} $\rightarrow$ Primary Key
+\end{itemize}
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Translating an Entity}}
+
+\textbf{E-R Model:} Entity \texttt{Student} with attributes \texttt{RegistrationNumber} (Identifier), \texttt{Surname}, \texttt{City}.\\
+\textbf{Relational Translation:} $\texttt{Student(\underline{RegistrationNumber}, Surname, City)}$
+
+\vs
+\textbf{Resulting Table (Student):}
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{\underline{RegistrationNumber}} & \textbf{Surname} & \textbf{City} \\
+\hline
+12345 & Rossi & Naples \\
+67890 & Bianchi & Rome \\
+\hline
+\end{tabular}
+\end{center}
+\end{example}
+
+\subsubsection{Translation Rules: Many-to-Many (N:M) Relationships}
+You cannot link two tables in a many-to-many relationship simply by putting a foreign key in one of them (because it would require multiple values in a single cell, violating 1NF). 
+
+\vs
+\begin{defbox}{Rule 2: Translating an N:M Relationship}
+An N:M relationship is always translated by creating a \textbf{brand new, separate table} (often called a bridge or junction table). This new table contains:
+\begin{itemize}
+    \item The Primary Keys of \textbf{all} participating entities (acting as Foreign Keys).
+    \item Any attributes belonging specifically to the relationship.
+\end{itemize}
+The Primary Key of this new table is usually the composite of the imported keys.
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Translating an N:M Relationship}}
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \node[draw, rectangle, minimum width=2.5cm, minimum height=1cm, thick] (emp) at (0,0) {Employee};
+  \node[draw, diamond, aspect=2, minimum width=2.5cm, minimum height=1cm, thick] (part) at (4,0) {Participation};
+  \node[draw, rectangle, minimum width=2.5cm, minimum height=1cm, thick] (proj) at (8,0) {Project};
+  \node[draw, ellipse, inner sep=2pt] (date) at (4,-1.5) {StartDate};
+  
+  \draw[thick] (emp) -- node[above] {(0,N)} (part);
+  \draw[thick] (part) -- node[above] {(0,N)} (proj);
+  \draw[thick] (part) -- (date);
+\end{tikzpicture}
+\end{center}
+
+\textbf{Relational Translation:}
+\begin{enumerate}
+    \item $\texttt{Employee(\underline{RegNumber}, Surname, Salary)}$
+    \item $\texttt{Project(\underline{Code}, Name, Budget)}$
+    \item $\texttt{Participation(\underline{EmployeeRegNumber, ProjectCode}, StartDate)}$
+\end{enumerate}
+
+\vs
+\textbf{Resulting Tables:}
+
+\textbf{Employee Table:}
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{\underline{RegNumber}} & \textbf{Surname} & \textbf{Salary} \\
+\hline
+E01 & Rossi & 3000 \\
+E02 & Verdi & 3200 \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Project Table:}
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{\underline{Code}} & \textbf{Name} & \textbf{Budget} \\
+\hline
+P100 & Alpha & 50000 \\
+P200 & Beta & 75000 \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Participation Table (Bridge):}
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{\underline{EmployeeRegNumber (FK)}} & \textbf{\underline{ProjectCode (FK)}} & \textbf{StartDate} \\
+\hline
+E01 & P100 & 2025-01-15 \\
+E01 & P200 & 2025-03-01 \\
+E02 & P100 & 2025-02-10 \\
+\hline
+\end{tabular}
+\end{center}
+
+\vs
+\textit{Note:} \texttt{Participation.EmployeeRegNumber} is a Foreign Key to \texttt{Employee}, and \texttt{Participation.ProjectCode} is a Foreign Key to \texttt{Project}.
+\end{example}
+
+\subsubsection{Renaming and Recursive Relationships}
+When importing Primary Keys into a bridge table, it is standard practice to rename them so they describe the \textit{role} they play, rather than just copying the original column name.
+
+While renaming is usually done for readability, it becomes \textbf{mathematically mandatory} when dealing with Recursive Relationships.
+
+\vs
+\begin{defbox}{Rule 3: Recursive Relationship Translation}
+When a relationship connects an entity to itself, the bridge table will import the same Primary Key twice. You \textbf{must} rename these columns to reflect their distinct roles; otherwise, the table will have two columns with the exact same name, which is impossible in a database.
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Renaming in a Recursive Relationship}}
+
+    \textbf{Relational Translation:}\\
+If the \texttt{Product} PK is \texttt{Code}, we cannot write \texttt{Composition(\underline{Code, Code}, Quantity)}. \\
+We \textbf{must} rename based on roles:
+\begin{itemize}
+    \item $\texttt{Product(\underline{Code}, Name, Cost)}$
+    \item $\texttt{Composition(\underline{CompoundCode, ComponentCode}, Quantity)}$
+\end{itemize}
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \node[draw, rectangle, minimum width=2.5cm, minimum height=1cm, thick] (prod) at (0,0) {Product};
+  \node[draw, diamond, aspect=2, minimum width=2.5cm, minimum height=1cm, thick] (comp) at (4,0) {Composition};
+  \node[draw, ellipse, inner sep=2pt] (qty) at (4,-1.5) {Quantity};
+
+  \draw[thick] (prod.north) -- ++(0,1) -| node[pos=0.25, above] {(0,N) Compound} (comp.north);
+  \draw[thick] (prod.south) -- ++(0,-1) -| node[pos=0.25, below] {(0,N) Component} (comp.south);
+  \draw[thick] (comp) -- (qty);
+\end{tikzpicture}
+\end{center}
+
+
+
+\vs
+\textbf{Resulting Tables:}
+
+\textbf{Product Table:}
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{\underline{Code}} & \textbf{Name} & \textbf{Cost} \\
+\hline
+B1 & Bicycle & 250 \\
+W1 & Wheel & 30 \\
+F1 & Frame & 100 \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Composition Table:}
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{\underline{CompoundCode (FK)}} & \textbf{\underline{ComponentCode (FK)}} & \textbf{Quantity} \\
+\hline
+B1 & W1 & 2 \\
+B1 & F1 & 1 \\
+\hline
+\end{tabular}
+\end{center}
+
+\end{example}
+
+\subsubsection{Translation of N-ary Relationships}
+The rule for translating an N-ary relationship (a diamond connected to 3 or more entities) is exactly the same as the rule for N:M relationships.
+
+\vs
+\begin{defbox}{Rule 4: Translating N-ary Relationships}
+An N-ary relationship is translated into a single new table. This table imports the Primary Keys from \textbf{all} participating entities to form its own composite Primary Key, alongside any attributes of the relationship itself.
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Translating a Ternary Relationship}}
+    
+If \texttt{Supplier}, \texttt{Client}, and \texttt{Product} are all connected by the relationship \texttt{Supply} (with attribute \texttt{Quantity}), the translation is:
+\begin{itemize}
+    \item $\texttt{Supplier(\underline{VATNumber}, CompanyName)}$
+    \item $\texttt{Client(\underline{Name}, Phone)}$
+    \item $\texttt{Product(\underline{Code}, Type)}$
+    \item \textbf{Bridge Table:} $\texttt{Supply(\underline{SupplierVAT, ClientName, ProductCode}, Quantity)}$
+\end{itemize}
+
+\vs
+\textbf{Resulting Bridge Table (Supply):}
+
+\vs
+\begin{center}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{\underline{SupplierVAT}} & \textbf{\underline{ClientName}} & \textbf{\underline{ProductCode}} & \textbf{Quantity} \\
+\hline
+IT123 & TechCorp & L1 (Laptop) & 50 \\
+IT123 & EduInc & M1 (Monitor) & 100 \\
+DE456 & TechCorp & K1 (Keyboard) & 200 \\
+\hline
+\end{tabular}
+\end{center}
+\end{example}
+
+\subsubsection{Translation of One-to-Many Relationships}
+
+Unlike Many-to-Many relationships that \textit{require} a bridge table, One-to-Many (1:N) relationships offer a more efficient translation method. Because one side of the relationship is restricted to a maximum of 1, we can often embed the relationship directly into one of the entity tables.
+
+\begin{defbox}{Rule 5: Translating a 1:N Relationship}
+In a One-to-Many relationship, the relationship (and its attributes) is translated by placing a \textbf{Foreign Key} inside the table of the entity on the "Many" side. This Foreign Key points to the Primary Key of the entity on the "One" side.
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Translating a 1:N Relationship}}
+
+
+    
+\textbf{Logic:} 
+\begin{itemize}
+    \item A Player belongs to exactly ONE Team (1,1).
+    \item A Team has MANY Players (0,N).
+    \item Therefore, the "Many" side is the \texttt{Player}. We place the Foreign Key here.
+\end{itemize}
+
+\textbf{Optimized Relational Translation:}
+\begin{enumerate}
+    \item $\texttt{Team(\underline{Name}, City)}$
+    \item $\texttt{Player(\underline{CodiceFiscale}, Name, Role, TeamName, Salary)}$
+\end{enumerate}
+
+\vs
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \node[draw, rectangle, minimum width=2.5cm, minimum height=1cm, thick] (player) at (0,0) {Player};
+  \node[draw, diamond, aspect=2, minimum width=2.5cm, minimum height=1cm, thick] (contract) at (4,0) {Contract};
+  \node[draw, rectangle, minimum width=2.5cm, minimum height=1cm, thick] (team) at (8,0) {Team};
+  \node[draw, ellipse, inner sep=2pt] (salary) at (4,-1.5) {Salary};
+  
+  \draw[thick] (player) -- node[above] {(1,1)} (contract);
+  \draw[thick] (contract) -- node[above] {(0,N)} (team);
+  \draw[thick] (contract) -- (salary);
+\end{tikzpicture}
+\end{center}
+
+
+\vs
+\textbf{Resulting Tables:}
+
+\textbf{Team Table:}
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{\underline{Name}} & \textbf{City} \\
+\hline
+Lakers & Los Angeles \\
+Bulls & Chicago \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Player Table (The "Many" Side):}
+\begin{center}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\textbf{\underline{CodiceFiscale}} & \textbf{Name} & \textbf{Role} & \textbf{\underline{TeamName (FK)}} & \textbf{Salary} \\
+\hline
+CF01 & Lebron & Forward & Lakers & 1000 \\
+CF02 & Davis & Center & Lakers & 800 \\
+CF03 & Lavine & Guard & Bulls & 700 \\
+\hline
+\end{tabular}
+\end{center}
+\end{example}
+
+\vspace{0.3cm}
+\textbf{The NULL Value Warning for 1:N}
+
+If the cardinality on the "One" side is optional $(0,1)$ instead of mandatory $(1,1)$, embedding the relationship will create \texttt{NULL} values for any entity instance that isn't participating. This is generally acceptable in modern databases but should be noted during design.
+
+\subsubsection{Translation of One-to-One Relationships}
+One-to-One (1:1) relationships provide the most flexibility. Because the maximum cardinality is 1 on both sides, there is no strict mathematical rule forcing the Foreign Key into a specific table.
+
+\begin{defbox}{Rule 6: Translating a 1:1 Relationship}
+A 1:1 relationship can be translated by embedding the Foreign Key (and relationship attributes) into \textbf{either} of the two entity tables, OR by creating a separate bridge table. The choice depends on optimizing for \texttt{NULL} values.
+\end{defbox}
+
+\pagebreak
+\textbf{Choosing the Best 1:1 Translation}
+
+The designer must look at the minimum cardinalities (optional vs mandatory) to make the best choice.
+
+\begin{itemize}
+    \item \textbf{Case A: Only ONE side is optional $(0,1)$ and the other is mandatory $(1,1)$.}\\
+    \textit{Solution:} Embed the Foreign Key into the table of the entity that has the \textbf{mandatory} $(1,1)$ participation. This guarantees the Foreign Key column will never contain a \texttt{NULL} value.
+    
+    \item \textbf{Case B: BOTH sides are optional $(0,1)$.}\\
+    \textit{Solution:} It is often best to create a \textbf{separate bridge table}. If you embed the relationship in either entity table, you will generate many \texttt{NULL} values for the instances that don't participate.
+\end{itemize}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: 1:1 Translation (Case A)}}
+
+\textbf{Logic:}
+\begin{itemize}
+    \item An Employee \textit{might} direct a Department $(0,1)$.
+    \item A Department \textit{must} be directed by an Employee $(1,1)$.
+    \item \textbf{Rule:} Embed into the mandatory side (\texttt{Department}).
+\end{itemize}
+
+\vs
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \node[draw, rectangle, minimum width=2.5cm, minimum height=1cm, thick] (emp) at (0,0) {Employee};
+  \node[draw, diamond, aspect=2, minimum width=2.5cm, minimum height=1cm, thick] (dir) at (4,0) {Direction};
+  \node[draw, rectangle, minimum width=2.5cm, minimum height=1cm, thick] (dept) at (8,0) {Department};
+  \node[draw, ellipse, inner sep=2pt] (year) at (4,-1.5) {Year};
+  
+  \draw[thick] (emp) -- node[above] {(0,1)} (dir);
+  \draw[thick] (dir) -- node[above] {(1,1)} (dept);
+  \draw[thick] (dir) -- (year);
+\end{tikzpicture}
+\end{center}
+
+\textbf{Relational Translation:}
+\begin{enumerate}
+    \item $\texttt{Employee(\underline{Code}, Name, Salary)}$
+    \item $\texttt{Department(\underline{Name}, Location, DirectorCode, Year)}$
+\end{enumerate}
+
+\vs
+\textbf{Resulting Tables:}
+
+\vs
+
+\textbf{Employee Table:}
+
+\vs
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{\underline{Code}} & \textbf{Name} & \textbf{Salary} \\
+\hline
+E01 & Mario & 5000 \\
+E02 & Luigi & 4500 \\
+E03 & Anna  & 5200 \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.3cm}
+\textbf{Department Table (The Mandatory Side):}
+
+\vspace{0.25cm}
+\begin{center}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{\underline{Name}} & \textbf{Location} & \textbf{\underline{DirectorCode (FK)}} & \textbf{Year} \\
+\hline
+IT & Milan & E01 & 2020 \\
+Sales & Rome & E03 & 2022 \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.3cm}
+
+\textit{Note:} \texttt{DirectorCode} is a Foreign Key referencing \texttt{Employee.Code}. Because every department \textit{must} have a director, this column will never be NULL. Employee E02 (Luigi) simply does not appear in the Department table because he is not a director (which is allowed by the 0,1 cardinality).
+\end{example}
+
+\subsection{Redundancy Analysis in Logical Design}
+
+
+Logical design is not just about translating diagrams into tables; it is also about optimizing the schema for performance and data integrity. One of the most critical optimization steps is \textbf{Redundancy Analysis}.
+
+\begin{defbox}{Redundancy}
+The presence of data in a database that can be logically derived or calculated from other data already stored within the schema.
+\end{defbox}
+
+The core question of Redundancy Analysis is: \textit{Should we store this derived value permanently to make reading faster, or should we calculate it on the fly to save space and prevent errors?}
+
+\subsubsection{The Problem with Redundancy: Consistency}
+While storing a pre-calculated value speeds up queries, it introduces a major risk.
+
+\begin{defbox}{Consistency Problem}
+A scenario where two pieces of stored data that should represent the same truth no longer match, usually because one was updated and the redundant copy was not.
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: The Consistency Risk}}
+
+If a database stores a \texttt{City} and an explicitly written \texttt{NumberOfInhabitants} (e.g., 5,000). 
+If a new person moves into the city, the database must remember to increment that counter to 5,001. If the system fails to update the counter, the database is now in an inconsistent state: the actual number of resident records (5,001) contradicts the stored counter (5,000).
+\end{example}
+
+\subsubsection{How to Decide: The Trade-off}
+Deciding whether to keep or remove redundancy is a mathematical trade-off based on two factors:
+\begin{enumerate}
+    \item \textbf{Cost of Operations:} Does storing the data save massive amounts of read time? Does it make update operations too heavy?
+    \item \textbf{Memory Occupation:} How much physical disk space does the redundant data consume? (Though less critical today, it is still a factor).
+\end{enumerate}
+
+\subsubsection{The Four Main Cases of Redundancy}
+
+\begin{defbox}{Case 1: Computed from the Same Record}
+An attribute that can be calculated using a simple mathematical formula from other attributes within the exact same tuple.
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Case 1}}
+
+Invoice Table: \texttt{NetAmount} = 100, \texttt{VAT} = 22. \\
+\texttt{GrossAmount} is redundant because it is always $\texttt{NetAmount} + \texttt{VAT}$.
+\end{example}
+
+\vs
+
+\begin{defbox}{Case 2: Computed from Different Entities}
+An attribute calculated by aggregating or combining data from multiple different tables.
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Case 2}}
+
+The \texttt{TotalAmount} of an Order. It can be derived by looking at the Order Details table, multiplying the \texttt{Quantity} by the \texttt{Price} of every item, and summing them up. \textit{Warning: If item prices change historically, storing the TotalAmount at the time of purchase becomes a necessity, not a redundancy.}
+\end{example}
+
+\begin{defbox}{Case 3: Counting Occurrences}
+An attribute that simply acts as a counter for how many related entity occurrences exist.
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Case 3}}
+
+Storing \texttt{TotalStudents} inside a \texttt{Course} entity, rather than running a \texttt{COUNT()} query on the \texttt{Enrollment} relationship table every time.
+\end{example}
+
+\vs
+\begin{defbox}{Case 4: Derived from Relationship Cycles}
+When a relationship can be logically deduced by following a cycle of other relationships in the schema.
+\end{defbox}
+
+\subsubsection{Example of Redundancy Evaluation: City Population}
+Let's mathematically prove whether we should keep a redundant counter using a volume and operations analysis.
+
+\textbf{Schema Context:}
+\begin{itemize}
+    \item \textbf{Entity:} \texttt{City} (Volume: 20 occurrences)
+    \item \textbf{Entity:} \texttt{Person} (Volume: 100,000 occurrences)
+    \item \textbf{Relationship:} \texttt{Residence} connects them. (Average: $100,000 / 20 = 5,000$ residents per city).
+    \item \textbf{The Redundancy:} Storing \texttt{NumberOfInhabitants} directly inside the \texttt{City} table.
+\end{itemize}
+
+\textbf{Workload (Operations):}
+\begin{itemize}
+    \item \textbf{Op 1 (Insert Person):} Happens 500 times/day.
+    \item \textbf{Op 2 (Print City + Population):} Happens 2 times/day.
+\end{itemize}
+
+\textit{Assumption:} A Write operation costs double a Read operation ($W=2, R=1$).
+
+\vspace{0.3cm}
+\textbf{Scenario A: KEEP the Redundancy (Store the Counter)}
+\begin{itemize}
+    \item \textbf{Op 1 (Insert):} Must insert Person (W), insert Residence (W), read City counter (R), update City counter (W). \\
+    Cost per insert: $2 + 2 + 1 + 2 = 7$. \\
+    Daily Cost: $500 \times 7 = \mathbf{3,500}$
+    
+    \item \textbf{Op 2 (Print):} Just read the City row (R). \\
+    Cost per print: $1$. \\
+    Daily Cost: $2 \times 1 = \mathbf{2}$
+\end{itemize}
+\textbf{Total Daily Cost: 3,502}
+
+\vspace{0.2cm}
+\begin{center}
+\textbf{Access Table for Op 1 (With Redundancy)}
+
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Concept} & \textbf{Type} & \textbf{Access} & \textbf{Number} \\
+\hline
+Person & Entity & Write & 1 \\
+Residence & Relat. & Write & 1 \\
+City & Entity & Read & 1 \\
+City & Entity & Write & 1 \\
+\hline
+\end{tabular}
+
+\vspace{0.2cm}
+\textbf{Access Table for Op 2 (With Redundancy)}
+
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Concept} & \textbf{Type} & \textbf{Access} & \textbf{Number} \\
+\hline
+City & Entity & Read & 1 \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.3cm}
+\textbf{Scenario B: REMOVE the Redundancy (Calculate on the fly)}
+\begin{itemize}
+    \item \textbf{Op 1 (Insert):} Just insert Person (W) and Residence (W). \\
+    Cost per insert: $2 + 2 = 4$. \\
+    Daily Cost: $500 \times 4 = \mathbf{2,000}$
+    
+
+    \vs
+    \item \textbf{Op 2 (Print):} Read the City row (R), then read ALL 5,000 residence records for that city to count them (5000 R). \\
+    Cost per print: $1 + 5000 = 5001$. \\
+    Daily Cost: $2 \times 5001 = \mathbf{10,002}$
+\end{itemize}
+\textbf{Total Daily Cost: 12,002}
+
+\vspace{0.2cm}
+\begin{center}
+\textbf{Access Table for Op 1 (Without Redundancy)}
+
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Concept} & \textbf{Type} & \textbf{Access} & \textbf{Number} \\
+\hline
+Person & Entity & Write & 1 \\
+Residence & Relat. & Write & 1 \\
+\hline
+\end{tabular}
+
+\vspace{0.2cm}
+\textbf{Access Table for Op 2 (Without Redundancy)}
+
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Concept} & \textbf{Type} & \textbf{Access} & \textbf{Number} \\
+\hline
+City & Entity & Read & 1 \\
+Residence & Relat. & Read & 5000 \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.3cm}
+\textbf{Conclusion of the Example}
+
+
+\begin{center}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Metric} & \textbf{With Redundancy} & \textbf{Without Redundancy} \\
+\hline
+Daily Access Cost & \textbf{3,502} (Winner) & 12,002 \\
+Memory Cost & $+40$ bytes (20 cities $\times$ 2 bytes) & 0 bytes \\
+Data Consistency & Harder to maintain & Automatic \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.25cm}
+\textbf{Final Decision}
+In this specific case, keeping the redundancy is the correct design choice. The cost of calculating 5,000 records on the fly vastly outweighs the slight performance hit during insertion. The memory cost (40 bytes) is entirely negligible.
