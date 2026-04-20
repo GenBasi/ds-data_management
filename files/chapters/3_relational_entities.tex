@@ -1,0 +1,100 @@
+
+%!TEX root = ../main.tex
+
+
+\section{Entity-Relationship (E-R) Model}
+
+\subsection{Introduction to the Entity-Relationship (E-R) Model}
+Before writing SQL code or creating tables, we must understand the data we are trying to organize. To do this, we use the \textbf{Entity-Relationship (E-R) Model}.
+
+\begin{defbox}{Entity-Relationship Model}
+A conceptual data model used to formally represent the structure, objects, and rules of a real-world domain, completely independent of how the data will physically be stored.
+\end{defbox}
+
+\subsubsection{The E-R Model in Database Design}
+Database design is a multi-step process. The E-R model belongs strictly to the first phase.
+
+\begin{enumerate}
+    \item \textbf{Conceptual Design} (Where E-R lives): Describing the reality of interest at a high level. No tables, no SQL, no storage constraints. Just abstract logic and meaning.
+    \item \textbf{Logical Design:} Transforming the conceptual E-R schema into a relational schema (tables, foreign keys).
+    \item \textbf{Physical Design:} Implementing the logical schema into a specific DBMS (e.g., PostgreSQL, Oracle), dealing with indexes, hardware, and performance.
+\end{enumerate}
+
+         \begin{figure}[H] 
+        \centering\includegraphics[scale=0.55]{6.E-R model.jpg}
+        \caption{E-R model}
+    \captionsetup{font=footnotesize}
+    \end{figure}
+
+\subsubsection{Main Constructs of the E-R Model}
+To describe a complex reality, the E-R model provides a small but powerful set of modeling tools called \textbf{constructs}.
+
+\begin{defbox}{Construct}
+A basic modeling element used in the E-R model to formally describe an aspect of the real world.
+\end{defbox}
+
+The three primary structural constructs are:
+
+\pagebreak
+\begin{enumerate}
+\item \textbf{Entity}
+
+A class of objects in the application domain (people, things, events) that share common properties and have an autonomous, independent existence.
+
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Entity}}
+
+In a university database, \texttt{STUDENT}, \texttt{COURSE}, and \texttt{PROFESSOR} are all Entities.
+\end{example}
+
+\vs
+\item \textbf{Relationship}
+
+A logical and meaningful link between two or more entities.
+
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Relationship}}
+
+\texttt{STUDENT} and \texttt{COURSE} are entities. The action \texttt{"Enrolls\_In"} is the Relationship connecting them.
+\end{example}
+
+\vs
+\item \textbf{Attribute}
+
+An elementary property used to describe an Entity or a Relationship.
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Attribute}}
+
+For the \texttt{STUDENT} entity, attributes would be \texttt{Name}, \texttt{Surname}, and \texttt{DateOfBirth}. \\
+Interestingly, the relationship \texttt{"Enrolls\_In"} can also have an attribute, such as \texttt{EnrollmentDate}.
+\end{example}
+\end{enumerate}
+
+
+\subsubsection{Constraints in the E-R Model}
+While Entities, Relationships, and Attributes describe the \textit{structure} of the data, the model also needs to enforce the \textit{rules} of reality. 
+
+While often listed as constructs, the following two concepts are technically \textbf{Integrity Constraints} applied to the building blocks above.
+
+\begin{defbox}{Relationship Cardinality}
+A constraint (usually expressed as a min/max pair) that dictates how many times a specific entity occurrence can participate in a relationship.
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Cardinality}}
+
+A \texttt{STUDENT} can enroll in many \texttt{COURSES}, but must be enrolled in at least one. The cardinality is \textbf{(1, N)}.
+\end{example}
+
+\begin{defbox}{Entity Identifier}
+An attribute, or set of attributes, that uniquely distinguishes one occurrence of an entity from all other occurrences of that same entity. (This is the conceptual equivalent of a Primary Key).
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Identifier}}
+  
+For the \texttt{STUDENT} entity, the \texttt{Name} is not a valid identifier (two students can be named Mario). The \texttt{StudentID} (Matricola) is the perfect identifier.
+\end{example}

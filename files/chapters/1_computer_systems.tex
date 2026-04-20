@@ -1,0 +1,321 @@
+
+%!TEX root = ../main.tex
+\section{Information Systems}
+
+\subsection{Introduction to Information Management}
+In the field of Data Science, before any models or algorithms can be applied, data must be collected, organized, and stored efficiently. This process is the foundation of \textbf{Data Management}.
+
+\vspace{-0.25cm}
+
+\subsubsection{Business Processes and Information Systems}
+A company operates through interconnected activities rather than isolated actions.
+
+\begin{defbox}{Business Process}
+A sequence of organizational activities aimed at producing a product or service, involving material, human, and informational resources.
+\end{defbox}
+
+\begin{defbox}{Information System}
+The set of all components within an organization dedicated to the \textbf{acquisition, processing, storage, retrieval, sharing, and transmission} of information.
+\end{defbox}
+
+An information system consists of four main pillars:
+\begin{itemize}
+    \item \textbf{Data Assets}: The raw materials used to generate information.
+    \item \textbf{Procedures}: The rules and methods for handling data.
+    \item \textbf{Human Resources}: The people who manage and use the system.
+    \item \textbf{Tools}: Physical and digital instruments for data processing.
+\end{itemize}
+
+\vspace{-0.2cm}
+\subsubsection{Information System vs. Computer System}
+It is important to distinguish the organizational framework from its supporting technology
+
+\begin{defbox}{Computer System}
+The technological infrastructure (hardware, software, databases, and networks) that supports the broader information system.
+\end{defbox}
+
+\textbf{Key takeaways for Data Management:}
+\begin{itemize}
+    \item The \textbf{Information System} is a broad concept including people and manual procedures.
+    \item The \textbf{Computer System} is specifically the automated technological part.
+    \item An organization can have an information system even if it is not fully computerized.
+\end{itemize}
+
+\vspace{-0.2cm}
+
+\subsubsection{Information Production}
+Information is generated through a specific pipeline from reality to the user.
+
+\begin{defbox}{Information Production}
+The process through which raw data are acquired, saved, and processed to create useful information for decision-making.
+\end{defbox}
+
+The cycle follows these steps:
+\begin{enumerate}
+    \item \textbf{Observation}: Real-world events are observed.
+    \item \textbf{Storage}: Events are recorded as raw data.
+    \item \textbf{Processing}: Data is transformed into something meaningful.
+    \item \textbf{Transmission}: The result is communicated to the final recipients.
+\end{enumerate}
+
+         \begin{figure}[H] 
+        \centering\includegraphics[scale=0.11]{1.information production.jpg}
+        \caption{Information Production Pipeline}
+    \captionsetup{font=footnotesize}
+    \end{figure}
+
+
+Understanding the difference between these two terms is fundamental for any data scientist.
+
+\begin{itemize}
+\item \textbf{Data}: raw facts, symbols, or values that represent aspects of reality (e.g., a string of numbers).
+
+\item \textbf{Information}: the meaning derived from interpreting data within a specific context.
+  \end{itemize}
+
+For example, the value \texttt{08/02/1964} is \textbf{data}. Once we know it represents a \textit{Date of Birth}, it becomes \textbf{information}.
+
+\subsubsection{Elementary and Complex Information}
+Information can be categorized based on its structure:
+
+
+  
+\begin{itemize}
+\item \textbf{Elementary Information}: a basic piece of information consisting of an \textbf{attribute}, a \textbf{type}, and a \textbf{value} (e.g., Customer $\rightarrow$ String $\rightarrow$ Paolo Rossi).
+
+\vs
+
+
+
+\vs
+\item \textbf{Complex Information}: information formed by logically connecting elementary pieces through meaningful relationships (semantics).
+\end{itemize}
+
+
+Useful information for decision-making is rarely a single value; it is almost always a structured combination of related data points. This is why structured databases and DBMS are vital for processing complex information.
+
+       \begin{figure}[H] 
+        \centering\includegraphics[scale=0.4]{2.data and complex informations.jpg}
+        \caption{data and complex informations}
+    \captionsetup{font=footnotesize}
+    \end{figure}
+
+
+
+
+\subsection{Databases in Everyday Life}
+We interact with databases constantly (e.g., shopping, booking hotels, banking). These activities require data collections that reflect a real-world domain, support an organization, and are stored persistently.
+
+\begin{defbox}{Persistent Data}
+Data stored in a stable manner so that it remains available over time, even after the application or program that created it ends.
+\end{defbox}
+
+\subsubsection{Definition of a Database}
+A database is not just a random file of values; it is highly structured.
+
+\begin{defbox}{Database}
+A persistent, shared, and organized collection of related data equipped with a proper formal description.
+\end{defbox}
+
+\textbf{Core Properties:}
+\begin{itemize}
+    \item \textbf{Related \& Described:} Data points are linked and have defined structures.
+    \item \textbf{Shared:} Used by multiple applications and users simultaneously.
+    \item \textbf{Persistent:} Stored permanently.
+    \item \textbf{Consistent:} Maintains accuracy and validity.
+\end{itemize}
+
+
+
+\subsubsection{Metadata and Catalogs}
+A database must describe its own structure to be fully functional.
+
+\begin{defbox}{Metadata}
+Data that describes other data (e.g., data types, constraints, relationships).
+\end{defbox}
+
+\begin{defbox}{Catalog (or Dictionary)}
+The collection of metadata used by the system to understand the structure, meaning, and rules of the stored data.
+\end{defbox}
+
+        \begin{figure}[H] 
+        \centering\includegraphics[scale=0.4]{3.database definition.jpg}
+        \caption{database definition}
+    \captionsetup{font=footnotesize}
+    \end{figure}
+
+\subsection{Database Management Systems (DBMS)}
+To manage a database efficiently without writing custom code for every operation, organizations use a DBMS.
+
+\begin{defbox}{DBMS (Database Management System)}
+A specialized software system that allows users to \textbf{define}, \textbf{manipulate}, and \textbf{control} a database.
+\end{defbox}
+
+\begin{defbox}{Data Manipulation Operations (CRUD)}
+The standard operations provided by a DBMS:
+\begin{itemize}
+    \item \texttt{SELECT}: Retrieve data.
+    \item \texttt{INSERT}: Add new data.
+    \item \texttt{DELETE}: Remove data.
+    \item \texttt{UPDATE}: Modify existing data.
+\end{itemize}
+\end{defbox}
+
+\subsubsection{The Database System Environment}
+It is important to distinguish the database from the broader system.
+
+\begin{defbox}{Database System}
+The complete environment consisting of:
+\begin{enumerate}
+    \item \textbf{Users \& Applications:} The entities querying the data.
+    \item \textbf{DBMS:} The software managing the operations.
+    \item \textbf{Database:} The actual stored data.
+    \item \textbf{Catalog:} The metadata describing the database.
+\end{enumerate}
+\end{defbox}
+
+\subsubsection{Architecture of a DBMS}
+Modern DBMSs follow a layered architecture to separate user views from physical storage.
+
+\begin{defbox}{Three-Level Architecture}
+\begin{itemize}
+    \item \textbf{External Level:} How specific users or applications see the data (custom views).
+    \item \textbf{Logical Level:} The overall conceptual structure of the database (entities, attributes, relationships).
+    \item \textbf{Physical Level:} How the data is actually stored on hardware (files, disks).
+\end{itemize}
+\end{defbox}
+
+
+        \begin{figure}[H] 
+        \centering\includegraphics[scale=0.32]{4.DBMS architecture.jpg}
+        \caption{DBMS architecture}
+    \captionsetup{font=footnotesize}
+    \end{figure}
+
+\subsubsection{Data Independence}
+The layered architecture provides a massive advantage: you can change one level without breaking the others.
+
+\begin{itemize}
+\item \textbf{Data Independence}
+The ability to change the organization of data at one level without forcing rewrites of application programs.
+
+\vs
+\item\textbf{Logical Data Independence}
+The ability to modify the \textbf{logical schema} (e.g., adding a new entity) without altering the external views used by existing applications.
+
+\vs
+\item\textbf{Physical Data Independence}
+The ability to modify the \textbf{physical implementation} (e.g., moving to a new server or changing file structures) without altering the logical schema.
+\end{itemize}
+
+
+\begin{defbox}{Logical Schema}
+
+Logical Schema is  the formal description of the database's structure: defining entities (e.g., \texttt{Restaurants}, \texttt{Cuisine}), their attributes, and their relationships completely independent of physical storage.
+
+\end{defbox}
+
+
+        \begin{figure}[H] 
+        \centering\includegraphics[scale=0.32]{5.Logical schema.jpg}
+        \caption{Logical schema}
+    \captionsetup{font=footnotesize}
+    \end{figure}
+
+
+
+
+\subsection{Operational Functions of a DBMS}
+A DBMS provides the necessary tools to define how data is organized and to query, update, and manage that data safely.
+
+\subsubsection{DDL and DML}
+To perform these tasks, a DBMS relies on two primary types of languages.
+
+\begin{defbox}{DDL (Data Definition Language)}
+The language used to define the database's structure, including tables, attributes, types, and constraints.
+\end{defbox}
+
+\begin{defbox}{DML (Data Manipulation Language)}
+The language used to query, insert, modify, and delete the actual data stored within the database.
+\end{defbox}
+
+\textbf{Key distinction:}
+\begin{itemize}
+    \item \textbf{DDL} works on the \textit{schema} (creating a table).
+    \item \textbf{DML} works on the \textit{content} (searching for or updating records).
+\end{itemize}
+
+\subsubsection{Queries}
+Databases are built to respond to user or application requests efficiently. 
+
+\begin{defbox}{Query}
+A formal request sent to a database to retrieve specific information or manipulate data (e.g., searching for a train ticket by entering departure and arrival cities).
+\end{defbox}
+
+\subsubsection{Transactions}
+This is a foundational concept in database reliability. 
+
+\begin{defbox}{Transaction}
+A program execution within a DBMS that represents one \textbf{atomic} unit of work containing persistent changes to the database.
+\end{defbox}
+
+\textit{Atomic} means the transaction is indivisible: it must either execute completely or not at all. A transaction has only two possible outcomes:
+
+\begin{defbox}{Commit}
+The successful conclusion of a transaction, making all its changes permanent in the database.
+\end{defbox}
+
+\begin{defbox}{Abort (Rollback)}
+The cancellation of a transaction due to an error or failure, reverting the database to the exact state it was in before the transaction began.
+\end{defbox}
+
+This mechanism prevents partial updates, which would corrupt the database (e.g., deducting money from one account but failing to add it to another).
+
+\subsubsection{Core DML Operations (CRUD)}
+The operations executed within transactions generally fall into four categories:
+
+\begin{itemize}
+\item \textbf{SELECT}
+The operation used to read or query data without modifying the database state.
+\item \textbf{INSERT}
+The operation used to add new records or objects to the database.
+\item \textbf{UPDATE}
+The operation used to modify existing data.
+\item \textbf{DELETE}
+The operation used to remove data from the database.
+\end{itemize}
+
+\subsubsection{Main Advantages of a DBMS}
+Organizations use DBMSs because they solve critical problems associated with traditional file systems.
+
+
+\vspace{0.3cm}
+\textbf{1. Redundancy and Consistency}
+
+The reduction of unnecessary duplication of the same data across multiple files.
+
+
+\vspace{0.3cm}
+\textbf{2. Consistency}
+
+Ensuring data does not contradict itself. By reducing redundancy (storing a fact only once), any update is immediately reflected everywhere, preventing inconsistencies.
+
+\vspace{0.3cm}
+\textbf{3. Data Sharing}
+
+The ability of a centralized database to be accessed and utilized by multiple different users and applications simultaneously.
+
+\vspace{0.3cm}
+\textbf{4. Data Integrity}
+
+The validity, correctness, and quality of the stored data, enforced by the DBMS through strict rules and constraints (e.g., a birth date cannot be in the future).
+
+\vspace{0.3cm}
+\textbf{5. Efficiency}
+
+The ability of the DBMS to execute queries and updates with high performance, even on massive datasets.
+
+\vspace{0.3cm}
+\textbf{6. Concurrency Control}
+
+The mechanism by which the DBMS manages multiple transactions happening at the exact same time, ensuring they do not interfere with each other and produce incorrect results.

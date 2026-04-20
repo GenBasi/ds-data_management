@@ -1,0 +1,43 @@
+\documentclass[11pt]{article}
+\input{preamble}
+
+\title{\Huge Data Management}
+\author{\Large Gennaro Basile}
+\date{\today}
+
+\titlepic{
+    \begin{center}
+        \includegraphics[scale=1]{0.database.jpg}
+    \end{center}}
+
+
+
+\begin{document}
+\maketitle
+\counterwithin{figure}{subsection}
+\captionsetup[figure]{labelfont=bf}
+
+\pagebreak
+
+%% -- Sommario
+\tableofcontents
+\pagebreak
+
+
+\input{chapters/1_computer_systems}
+\pagebreak
+
+\input{chapters/2_relational_model}
+\pagebreak
+
+\input{chapters/3_relational_entities}
+\pagebreak
+
+
+\begin{comment}
+\input{chapters/1_SQL_DDL_DML}
+\pagebreak
+\end{comment}
+
+
+\end{document}

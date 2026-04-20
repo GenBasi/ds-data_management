@@ -1,0 +1,1749 @@
+
+%!TEX root = ../main.tex
+
+\section{sommario}
+\begin{itemize}
+
+
+  \item \textbf{Case study: The Movies Database}
+  \begin{itemize}
+    \item Database schema overview: slide 24
+    \item Table creation for MOVIES: slide 25
+    \item Table creation for GENRES and DIRECTORS: slide 26
+    \item Table creation for ACTORS and PRODUCTIONS: slide 27
+    \item Table creation for MOVIE\_CAST and USERS: slide 28
+    \item Table creation for COMMENTS and RATINGS: slide 29
+    \item Adding foreign key constraints: slide 30
+  \end{itemize}
+
+  \item \textbf{Exercises and solutions}
+  \begin{itemize}
+    \item Exercise statements: slide 31
+    \item Solution Ex.1: slides 32--33
+    \item Solution Ex.2: slide 34
+    \item Solution Ex.3: slide 35
+  \end{itemize}
+\end{itemize}
+
+\pagebreak
+
+
+\section{Introduction to SQL and Relational Databases}
+
+ \subsection{SQL Overview}
+
+ SQL stands for \textbf{Structured Query Language} and it is the standard language used to work with \textbf{relational database management systems} (RDBMS).
+
+ \begin{defbox}{SQL}
+  SQL is a \textbf{declarative language} for relational databases. This means that the user specifies \textbf{what} result is needed, not the exact sequence of steps to obtain it.
+ \end{defbox}
+
+ This is an important idea. In procedural languages such as Python, the programmer usually describes the exact operations to perform. In SQL, instead, the programmer expresses the goal, and the DBMS decides how to execute the query efficiently.
+
+ SQL is commonly divided into different parts:
+ \begin{itemize}
+  \item \textbf{DDL (Data Definition Language)}, used to define and modify the database structure;
+  \item \textbf{DML (Data Manipulation Language)}, used to manipulate and query the data;
+  \item commands for \textbf{users, roles, and privileges}, used to manage security.
+ \end{itemize}
+
+ \vs
+ \begin{example}
+  Suppose we want to retrieve the names of all students from a table called \texttt{STUDENTS}. In SQL we can simply write:
+  \begin{verbatim}
+  SELECT FirstName, LastName
+  FROM STUDENTS;
+  \end{verbatim}
+  \vspace{-0.25cm}
+  Here we specify \textbf{what} we want: the first and last names from the table. We do not specify how the DBMS should scan memory, access indexes, or organize the result internally.
+ \end{example}
+
+ \subsubsection{Structure of a Relational Database}
+
+ A relational database stores data in \textbf{relations}, usually called \textbf{tables}. Each table contains rows and columns.
+
+ \begin{defbox}{Relation}
+  A relation is a table in the relational model. It is composed of rows and columns and represents a set of data about a specific entity.
+ \end{defbox}
+
+ \begin{defbox}{Tuple}
+  A tuple is a \textbf{row} of a relation. It represents one specific record stored in the table.
+ \end{defbox}
+
+ \begin{defbox}{Attribute}
+  An attribute is a \textbf{column} of a relation. It represents one property of the entity stored in the table.
+ \end{defbox}
+
+ \begin{defbox}{Domain}
+  A domain is the set of admissible values for an attribute. It defines the type of data that can appear in that column.
+ \end{defbox}
+
+ \pagebreak
+
+ The main properties of a relation are:
+ \begin{itemize}
+  \item tuples are unique;
+  \item the order of tuples is irrelevant;
+  \item each attribute belongs to a domain.
+ \end{itemize}
+
+ For example, the relation
+ \[
+  \texttt{STUDENTS(StudentID, FirstName, LastName, Address)}
+ \]
+ describes a table called \texttt{STUDENTS} with four attributes.
+
+ \vs
+ \begin{example}
+  Consider the following table:
+  \begin{center}
+   \begin{tabular}{llll}
+    \textbf{StudentID} & \textbf{FirstName} & \textbf{LastName} & \textbf{Address} \\
+    1 & Alice & Rossi & Naples \\
+    2 & Marco & Bianchi & Rome
+   \end{tabular}
+  \end{center}
+
+  In this example:
+  \begin{itemize}
+   \item \texttt{STUDENTS} is the relation;
+   \item \texttt{StudentID}, \texttt{FirstName}, \texttt{LastName}, and \texttt{Address} are attributes;
+   \item each row is a tuple;
+   \item the domain of \texttt{StudentID} may be integers, while the domain of \texttt{FirstName} is a string domain.
+  \end{itemize}
+ \end{example}
+
+\subsection{Data Definition Language (DDL)}
+
+ \subsubsection{DDL Overview}
+
+ DDL stands for \textbf{Data Definition Language}. It is the part of SQL used to define and modify the structure of database objects.
+
+ \begin{defbox}{DDL}
+  DDL is the subset of SQL used to create, change, and remove database objects such as tables.
+ \end{defbox}
+
+ The main DDL commands introduced in these chapter are:
+ \begin{itemize}
+  \item \texttt{CREATE}
+  \item \texttt{ALTER}
+  \item \texttt{DROP}
+ \end{itemize}
+
+ Their definitions are stored in the \textbf{database catalog}.
+
+ \begin{defbox}{Database Catalog}
+  The database catalog is the part of the DBMS that stores metadata, that is, information about the structure of the database objects.
+ \end{defbox}
+
+ \vs
+ \begin{example}
+  If we create a table called \texttt{STUDENTS}, the DBMS stores information such as:
+  \begin{itemize}
+   \item the table name;
+   \item the list of attributes;
+   \item the data types of the attributes;
+   \item the constraints defined on the table.
+  \end{itemize}
+
+  These structural details are not regular user data: they are metadata stored in the database catalog.
+ \end{example}
+
+ \subsubsection{CREATE TABLE}
+
+ The command \texttt{CREATE TABLE} is used to define the schema of a new relation.
+
+ \begin{defbox}{Schema}
+  The schema of a table is its structural definition, including the table name, attributes, data types, and constraints.
+ \end{defbox}
+
+ General syntax:
+
+ \begin{verbatim}
+ CREATE TABLE TableName (
+   Attribute1 Domain [Constraints],
+   Attribute2 Domain [Constraints],
+   Attribute3 Domain [Constraints],
+   ...
+ );
+ \end{verbatim}
+
+ Each attribute requires:
+ \begin{itemize}
+  \item a name;
+  \item a domain or data type;
+  \item optional constraints.
+ \end{itemize}
+
+ \vs
+ \begin{example}
+  Suppose we want to create a table for books:
+  \begin{verbatim}
+  CREATE TABLE BOOKS (
+    BookID INT,
+    Title VARCHAR(100),
+    Author VARCHAR(100)
+  );
+  \end{verbatim}
+
+  \vspace{-0.25cm}
+  This statement defines the schema of the table \texttt{BOOKS}. It does not insert any book yet. It only creates the structure that future rows must follow.
+ \end{example}
+
+
+ \vs
+ \begin{example}{\textbf{CREATE TABLE with Constraints}}
+
+ Consider the following SQL statement:
+
+ \begin{verbatim}
+ CREATE TABLE STUDENTS (
+   StudentID INT PRIMARY KEY,
+   FirstName VARCHAR(50) NOT NULL,
+   LastName VARCHAR(50) NOT NULL,
+   Address VARCHAR(100)
+ );
+ \end{verbatim}
+
+ \vspace{-0.25cm}
+ This creates a table called \texttt{STUDENTS} with four attributes. The example also introduces two very important constraints.
+
+ \begin{defbox}{Primary Key}
+  A primary key is an attribute, or a set of attributes, that uniquely identifies each row of a table and cannot contain \texttt{NULL} values.
+ \end{defbox}
+
+ \begin{defbox}{NOT NULL}
+  The \texttt{NOT NULL} constraint specifies that an attribute must always contain a value.
+ \end{defbox}
+
+ In this table:
+ \begin{itemize}
+  \item \texttt{StudentID} is the primary key;
+  \item \texttt{FirstName} and \texttt{LastName} are mandatory;
+  \item \texttt{Address} is optional because it has no \texttt{NOT NULL} constraint.
+ \end{itemize}
+
+\end{example}
+
+\pagebreak
+
+ \begin{example}
+  The following insertion is valid:
+  \begin{verbatim}
+  INSERT INTO STUDENTS
+  VALUES (1, 'Luca', 'Verdi', 'Milan');
+  \end{verbatim}
+
+  The following insertion is not valid:
+  \begin{verbatim}
+  INSERT INTO STUDENTS
+  VALUES (NULL, 'Luca', 'Verdi', 'Milan');
+  \end{verbatim}
+
+  \vspace{-0.25cm}
+  It is invalid because the primary key cannot be \texttt{NULL}.
+
+  This insertion is also not valid:
+  \begin{verbatim}
+  INSERT INTO STUDENTS
+  VALUES (2, NULL, 'Verdi', 'Milan');
+  \end{verbatim}
+
+  \vspace{-0.25cm}
+  It is invalid because \texttt{FirstName} has the \texttt{NOT NULL} constraint.
+ \end{example}
+
+ \subsubsection{ALTER TABLE}
+
+ The command \texttt{ALTER TABLE} is used to modify an existing table without deleting it.
+
+ \begin{defbox}{ALTER TABLE}
+  \texttt{ALTER TABLE} is a DDL command used to change the structure of an already existing table.
+ \end{defbox}
+
+ Typical operations include:
+ \begin{itemize}
+  \item adding columns;
+  \item removing columns;
+  \item adding constraints;
+  \item renaming columns.
+ \end{itemize}
+
+ \vs
+ \begin{example}
+  Suppose that the table \texttt{STUDENTS} already exists, but later we realize that we also want to store student emails. Instead of deleting and recreating the table, we can modify it with:
+  \begin{verbatim}
+  ALTER TABLE STUDENTS
+  ADD Email VARCHAR(100);
+  \end{verbatim}
+ \end{example}
+
+
+ \begin{example}{\textbf{ALTER TABLE}}
+
+ The example shows four common examples.
+
+ \paragraph{Adding a column}
+
+ \begin{verbatim}
+ ALTER TABLE STUDENTS
+ ADD Email VARCHAR(100);
+ \end{verbatim}
+
+\vspace{-0.3cm}
+ This adds a new attribute called \texttt{Email}.
+
+
+  Before the modification, the table has columns:
+  \[
+   \texttt{StudentID, FirstName, LastName, Address}
+  \]
+
+  After the modification, it becomes:
+  \[
+   \texttt{StudentID, FirstName, LastName, Address, Email}
+  \]
+
+
+ \pagebreak
+ \paragraph{Removing a column}
+
+ \begin{verbatim}
+ ALTER TABLE STUDENTS
+ DROP COLUMN Address;
+ \end{verbatim}
+
+ \vspace{-0.3cm}
+ This removes the attribute \texttt{Address} from the table structure.
+
+
+  If the database designer decides that the address is no longer needed, this command removes that column completely. After that, it is no longer possible to store or query \texttt{Address} values from the table.
+
+
+ \paragraph{Adding a constraint}
+
+ \begin{verbatim}
+ ALTER TABLE STUDENTS
+ ADD CONSTRAINT unique_email
+ UNIQUE (Email);
+ \end{verbatim}
+
+ \vspace{-0.3cm}
+ This adds a uniqueness constraint on the \texttt{Email} column.
+
+ \begin{defbox}{UNIQUE}
+  The \texttt{UNIQUE} constraint ensures that two different rows cannot contain the same value in the constrained attribute.
+ \end{defbox}
+
+  Suppose one student already has the email \texttt{luca@email.com}. Then trying to insert another student with the same email would violate the constraint:
+  \begin{verbatim}
+  INSERT INTO STUDENTS
+  VALUES (3, 'Anna', 'Neri', 'Turin', 'luca@email.com');
+  \end{verbatim}
+
+  \vspace{-0.3cm}
+  This insertion would be rejected because \texttt{Email} must be unique.
+
+
+ \paragraph{Renaming a column}
+
+ \begin{verbatim}
+ ALTER TABLE STUDENTS
+ RENAME COLUMN FirstName TO Name;
+ \end{verbatim}
+
+ \vspace{-0.3cm}
+
+ This changes the column name from \texttt{FirstName} to \texttt{Name}.
+
+
+  After the renaming, queries must use the new name:
+  \begin{verbatim}
+  SELECT Name
+  FROM STUDENTS;
+  \end{verbatim}
+
+  \vspace{-0.3cm}
+
+  Using \texttt{FirstName} after the renaming would no longer be correct.
+ \end{example}
+
+
+
+ \subsubsection{DROP TABLE}
+
+ The command \texttt{DROP TABLE} removes a table from the database.
+
+
+
+ \begin{defbox}{DROP TABLE}
+  \texttt{DROP TABLE} is a DDL command used to permanently remove a table definition from the database.
+ \end{defbox}
+
+ General syntax:
+
+ \begin{verbatim}
+ DROP TABLE TableName [RESTRICT | CASCADE];
+ \end{verbatim}
+
+ \vspace{-0.2cm}
+
+ Two important options are:
+ \begin{itemize}
+  \item \texttt{RESTRICT}: deletion is allowed only if no other objects depend on the table;
+  \item \texttt{CASCADE}: dependent objects are removed as well.
+ \end{itemize}
+
+ \begin{defbox}{Dependency}
+  A dependency exists when one database object relies on another. For example, a table with a foreign key depends on the referenced table.
+ \end{defbox}
+
+ \vs
+ \begin{example}
+  Suppose table \texttt{EXAMS} contains a foreign key that references \texttt{STUDENTS}. If we try:
+  \begin{verbatim}
+  DROP TABLE STUDENTS RESTRICT;
+  \end{verbatim}
+
+  \vspace{-0.3cm}
+  the DBMS may reject the command because \texttt{EXAMS} depends on \texttt{STUDENTS}.
+
+  If we use:
+  \begin{verbatim}
+  DROP TABLE STUDENTS CASCADE;
+  \end{verbatim}
+
+    \vspace{-0.3cm}
+  the DBMS may also remove dependent objects or dependent constraints.
+ \end{example}
+
+\subsection{Integrity Constraints}
+
+ \subsubsection{General Overview of Integrity Constraints}
+
+ Integrity constraints are rules that guarantee the correctness and consistency of the data stored in the database.
+
+ \begin{defbox}{Integrity Constraint}
+  An integrity constraint is a rule that database values must always satisfy in order for the database instance to be considered valid.
+ \end{defbox}
+
+ If all constraints are satisfied, then the database instance is \textbf{legal}. Otherwise, the DBMS rejects the operation that causes the violation.
+
+ Constraints are divided into two main categories:
+ \begin{itemize}
+  \item \textbf{intra-relational constraints}, which involve one table only;
+  \item \textbf{inter-relational constraints}, which involve more than one table.
+ \end{itemize}
+
+ \vs
+ \begin{example}
+  A constraint such as ``\texttt{Grade must be between 18 and 30}'' is intra-relational because it concerns only one table.
+
+  A constraint such as ``\texttt{StudentID in EXAMS must exist in STUDENTS}'' is inter-relational because it connects two tables.
+ \end{example}
+
+ \subsubsection{Intra-relational Constraints}
+
+ Intra-relational constraints are rules defined inside a single table.
+
+ \vspace{0.3cm}
+ \textbf{1. Domain Constraints}
+
+ Domain constraints restrict the values that a single attribute can assume.
+
+ \begin{defbox}{Domain Constraint}
+  A domain constraint limits the admissible values of one attribute.
+ \end{defbox}
+
+ Common examples include:
+ \begin{itemize}
+  \item an attribute cannot be \texttt{NULL};
+  \item a numeric value must belong to a specific interval;
+  \item a value must satisfy a logical condition.
+ \end{itemize}
+
+\pagebreak
+
+\begin{example}{\textbf{check}}
+
+ \begin{verbatim}
+ CREATE TABLE EXAMS (
+   Grade INT CHECK (Grade BETWEEN 18 AND 30),
+   StudentID INT NOT NULL
+ );
+ \end{verbatim}
+
+\end{example}
+
+ \begin{defbox}{CHECK}
+  The \texttt{CHECK} constraint specifies a logical condition that every inserted or updated value must satisfy.
+ \end{defbox}
+
+ Here:
+ \begin{itemize}
+  \item \texttt{Grade} must be between 18 and 30;
+  \item \texttt{StudentID} cannot be \texttt{NULL}.
+ \end{itemize}
+
+
+  The following insertion is valid:
+  \begin{verbatim}
+  INSERT INTO EXAMS
+  VALUES (28, 101);
+  \end{verbatim}
+
+  The following insertion is not valid:
+  \begin{verbatim}
+  INSERT INTO EXAMS
+  VALUES (15, 101);
+  \end{verbatim}
+
+  \vspace{-0.4cm}
+  because \texttt{15} is outside the allowed range.
+
+  \vs
+  This insertion is also not valid:
+  \begin{verbatim}
+  INSERT INTO EXAMS
+  VALUES (28, NULL);
+  \end{verbatim}
+
+    \vspace{-0.4cm}
+  because \texttt{StudentID} cannot be \texttt{NULL}.
+
+\vspace{0.3cm}
+ \textbf{2. Tuple Constraints}
+
+ Tuple constraints involve multiple attributes of the same row.
+
+ \begin{defbox}{Tuple Constraint}
+  A tuple constraint is a rule that checks the relationship among two or more attributes of the same tuple.
+ \end{defbox}
+
+ for example:
+ \[
+  \texttt{Lode = YES only if Grade = 30}
+ \]
+
+ This means that the admissible value of \texttt{Lode} depends on the value of \texttt{Grade}.
+
+\vs
+
+\begin{example}{\textbf{tuple constraints}}
+
+ \begin{verbatim}
+ CREATE TABLE EXAMS (
+   Grade INT CHECK (Grade BETWEEN 18 AND 30),
+   StudentID INT NOT NULL,
+   Lode VARCHAR2(3),
+   CONSTRAINT chk_lode CHECK (
+     (Lode = 'YES' AND Grade = 30) OR Lode = 'NO'
+   )
+ );
+ \end{verbatim}
+
+
+  The following row is valid:
+  \begin{verbatim}
+  INSERT INTO EXAMS
+  VALUES (30, 101, 'YES');
+  \end{verbatim}
+
+  \vspace{-0.4cm}
+  because a student can receive \texttt{Lode = 'YES'} only with grade 30.
+
+  The following row is not valid:
+  \begin{verbatim}
+  INSERT INTO EXAMS
+  VALUES (29, 101, 'YES');
+  \end{verbatim}
+
+    \vspace{-0.4cm}
+  because \texttt{Lode = 'YES'} is incompatible with \texttt{Grade = 29}.
+ \end{example}
+
+ \vspace{0.3cm}
+ \textbf{3. Key Constraints}
+
+ Key constraints ensure that each tuple can be uniquely identified.
+
+ \begin{defbox}{Key}
+  A key is a minimal set of attributes that uniquely identifies a row of a relation.
+ \end{defbox}
+
+ \begin{defbox}{Primary Key}
+  The primary key is the chosen key used to uniquely identify each tuple in a table. It must be unique and cannot contain \texttt{NULL} values.
+ \end{defbox}
+
+ The word \textit{minimal} means that no unnecessary attribute should be included in the key.
+
+ \begin{defbox}{Entity Integrity}
+  Entity integrity is the rule stating that the primary key of a table must be unique and must never be \texttt{NULL}.
+ \end{defbox}
+
+ For example, in the table \texttt{STUDENTS}, the attribute \texttt{StudentID} is an appropriate primary key because every student should have a unique identifier.
+
+ \vs
+ \begin{example}
+  Consider the table:
+  \begin{verbatim}
+  CREATE TABLE STUDENTS (
+    StudentID INT PRIMARY KEY,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50)
+  );
+  \end{verbatim}
+
+  This insertion is valid:
+  \begin{verbatim}
+  INSERT INTO STUDENTS
+  VALUES (1, 'Sara', 'Blue');
+  \end{verbatim}
+
+  \vspace{-0.4cm}
+  This insertion is not valid:
+  \begin{verbatim}
+  INSERT INTO STUDENTS
+  VALUES (1, 'Paolo', 'Green');
+  \end{verbatim}
+
+    \vspace{-0.4cm}
+  because the value \texttt{1} is already used as a primary key.
+
+  This insertion is also not valid:
+  \begin{verbatim}
+  INSERT INTO STUDENTS
+  VALUES (NULL, 'Paolo', 'Green');
+  \end{verbatim}
+
+    \vspace{-0.4cm}
+  because a primary key cannot be \texttt{NULL}.
+ \end{example}
+
+ \subsubsection{Inter-relational Constraints}
+
+ Inter-relational constraints are rules that involve multiple tables.
+
+ \begin{defbox}{Inter-relational Constraint}
+  An inter-relational constraint is a rule that enforces consistency between two or more tables.
+ \end{defbox}
+
+ These constraints are very important because relational databases usually distribute information across different tables in order to reduce redundancy and keep the design organized.
+
+ The most important inter-relational constraint is \textbf{referential integrity}.
+
+ \begin{defbox}{Referential Integrity}
+  Referential integrity ensures that a foreign key value in one table must correspond to an existing primary key value in another table.
+ \end{defbox}
+
+ \begin{defbox}{Foreign Key}
+  A foreign key is an attribute, or a set of attributes, in one table that references the primary key of another table.
+ \end{defbox}
+
+ \begin{example}
+  Suppose we have:
+  \begin{itemize}
+   \item a table \texttt{STUDENTS} containing student information;
+   \item a table \texttt{EXAMS} containing exam information.
+  \end{itemize}
+
+  If \texttt{EXAMS.StudentID} is a foreign key referencing \texttt{STUDENTS.StudentID}, then every exam must refer to a student that actually exists in the database.
+ \end{example}
+
+ \vs
+
+ \begin{example}{\textbf{Foreign Key}}
+
+ The slides provide the following example:
+
+ \begin{verbatim}
+ CREATE TABLE STUDENTS (
+   StudentID INT PRIMARY KEY,
+   FirstName VARCHAR(50) NOT NULL,
+   LastName VARCHAR(50) NOT NULL,
+   Address VARCHAR(100)
+ );
+ \end{verbatim}
+
+ \begin{verbatim}
+ CREATE TABLE EXAMS (
+   Grade INT CHECK (Grade BETWEEN 18 AND 30),
+   StudentID INT NOT NULL,
+   CONSTRAINT FK_STUDENT FOREIGN KEY (StudentID)
+   REFERENCES STUDENTS(StudentID)
+ );
+ \end{verbatim}
+
+ Here:
+ \begin{itemize}
+  \item \texttt{STUDENTS} is the referenced table;
+  \item \texttt{StudentID} in \texttt{STUDENTS} is the primary key;
+  \item \texttt{StudentID} in \texttt{EXAMS} is the foreign key.
+ \end{itemize}
+
+ This means that every value appearing in \texttt{EXAMS.StudentID} must already exist in \texttt{STUDENTS.StudentID}.
+
+\vs
+  Suppose the table \texttt{STUDENTS} contains:
+  \begin{verbatim}
+  INSERT INTO STUDENTS
+  VALUES (1, 'Giulia', 'Rossi', 'Naples');
+  \end{verbatim}
+
+  Then the following insertion into \texttt{EXAMS} is valid:
+  \begin{verbatim}
+  INSERT INTO EXAMS
+  VALUES (30, 1);
+  \end{verbatim}
+
+  because student \texttt{1} exists.
+
+  But this insertion is not valid:
+  \begin{verbatim}
+  INSERT INTO EXAMS
+  VALUES (28, 99);
+  \end{verbatim}
+
+  because student \texttt{99} does not exist in the \texttt{STUDENTS} table.
+
+ \end{example}
+
+\subsection{Data Manipulation Language (DML)}
+
+ \subsubsection{DML Overview}
+
+ DML stands for \textbf{Data Manipulation Language}. While DDL is used to define the structure of the database, DML is used to work on the actual data stored inside the tables.
+
+ \begin{defbox}{Data Manipulation Language (DML)}
+  DML is the subset of SQL used to \textbf{retrieve}, \textbf{insert}, \textbf{update}, and \textbf{delete} data stored in database tables.
+ \end{defbox}
+
+ We are going to introduce four main DML commands:
+ \begin{itemize}
+  \item \texttt{INSERT}, used to add new rows;
+  \item \texttt{UPDATE}, used to modify existing rows;
+  \item \texttt{DELETE}, used to remove rows;
+  \item \texttt{SELECT}, used to retrieve data.
+ \end{itemize}
+
+ A key conceptual difference is the following:
+ \begin{itemize}
+  \item DDL changes the \textbf{schema} of the database;
+  \item DML changes the \textbf{content} of the database.
+ \end{itemize}
+
+ We need also mentions that DML operations may belong to \textbf{transactions}.
+
+ \begin{defbox}{Transaction}
+  A transaction is a logical unit of work composed of one or more operations that must be executed reliably as a single block.
+ \end{defbox}
+
+ This is an important idea in databases. For example, if we need to perform multiple modifications together, the DBMS should guarantee that either all of them succeed or all of them are undone.
+
+ \begin{example}
+  Suppose a system must:
+  \begin{itemize}
+   \item transfer money from one bank account to another;
+   \vspace{0.2cm}
+   \item decrease the balance of the first account;
+   \vspace{0.2cm}
+   \item increase the balance of the second account.
+  \end{itemize}
+
+  These operations should belong to one transaction. If only the first modification is executed and the second fails, the data would become inconsistent.
+ \end{example}
+
+ \subsubsection{INSERT}
+
+ The \texttt{INSERT} command is used to add new tuples into a table.
+
+ \begin{defbox}{INSERT}
+  \texttt{INSERT} is a DML command used to add one or more new rows into a database table.
+ \end{defbox}
+
+ General syntax:
+
+ \begin{verbatim}
+ INSERT INTO TableName VALUES (...);
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+ This syntax means that we specify:
+ \begin{itemize}
+  \item the table in which we want to insert data;
+  \item the values for the new row.
+ \end{itemize}
+
+  Examples  are:
+
+ \begin{verbatim}
+ INSERT INTO STUDENTS VALUES (1, 'Francesco', 'Di Serio', 'Naples');
+ INSERT INTO STUDENTS VALUES (2, 'Antonio', 'Laudante', 'Naples');
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+ These statements insert two new rows into the \texttt{STUDENTS} table.
+
+ When using \texttt{VALUES(...)}, the order of the inserted values must match the order of the columns in the table schema. This is why the designer must know the structure of the table before writing an insertion.
+
+ \vs
+
+ \begin{example}
+  Suppose the table is:
+  \begin{verbatim}
+  CREATE TABLE STUDENTS (
+    StudentID INT,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    Address VARCHAR(100)
+  );
+  \end{verbatim}
+  \vspace{-0.4cm}
+
+  Then the statement
+  \begin{verbatim}
+  INSERT INTO STUDENTS VALUES (3, 'Alice', 'Rossi', 'Rome');
+  \end{verbatim}
+  \vspace{-0.4cm}
+
+  inserts a new tuple where:
+  \begin{itemize}
+   \item \texttt{StudentID = 3};
+   \vspace{0.2cm}
+   \item \texttt{FirstName = 'Alice'};
+   \vspace{0.2cm}
+   \item \texttt{LastName = 'Rossi'};
+   \vspace{0.2cm}
+   \item \texttt{Address = 'Rome'}.
+  \end{itemize}
+
+
+
+  A practical way to think about \texttt{INSERT} is:
+  \begin{itemize}
+   \item \texttt{Step1}: identify the target table;
+
+   \item \texttt{Step2}: check the order of the columns in the schema;
+
+   \item \texttt{Step3}: provide a value for each required attribute;
+
+   \item \texttt{Step4}: ensure that the inserted values satisfy all constraints.
+  \end{itemize}
+
+   \end{example}
+
+ \subsubsection{UPDATE}
+
+ The \texttt{UPDATE} command is used to modify existing tuples in a table.
+
+ \begin{defbox}{UPDATE}
+  \texttt{UPDATE} is a DML command used to change the values of one or more attributes in already existing rows.
+ \end{defbox}
+
+ General syntax:
+
+ \begin{verbatim}
+ UPDATE TableName
+ SET attribute = value
+ WHERE condition;
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+ This syntax has three main parts:
+ \begin{itemize}
+  \item the target table;
+  \item the new value to assign;
+  \item the condition that selects which rows must be modified.
+ \end{itemize}
+
+ An example  is:
+
+ \begin{verbatim}
+ UPDATE STUDENTS
+ SET Address = 'New York'
+ WHERE StudentID = 1;
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+ This statement updates the row corresponding to the student whose identifier is 1 and changes the value of \texttt{Address} to \texttt{'New York'}.
+
+ The \texttt{WHERE} clause is crucial. Without it, the DBMS may update all rows in the table.
+
+ \begin{example}
+  Suppose the table \texttt{STUDENTS} contains:
+  \begin{itemize}
+   \item \texttt{(1, 'Francesco', 'Di Serio', 'Naples')};
+   \vspace{0.2cm}
+   \item \texttt{(2, 'Antonio', 'Laudante', 'Naples')}.
+  \end{itemize}
+
+  After executing
+  \begin{verbatim}
+  UPDATE STUDENTS
+  SET Address = 'New York'
+  WHERE StudentID = 1;
+  \end{verbatim}
+  \vspace{-0.4cm}
+
+  the table becomes:
+  \begin{itemize}
+   \item \texttt{(1, 'Francesco', 'Di Serio', 'New York')};
+   \vspace{0.2cm}
+   \item \texttt{(2, 'Antonio', 'Laudante', 'Naples')}.
+  \end{itemize}
+
+
+
+  A safe reasoning process for \texttt{UPDATE} is:
+  \begin{itemize}
+   \item \texttt{Step1}: identify the table to modify;
+  
+   \item \texttt{Step2}: choose the attribute to change;
+  
+   \item \texttt{Step3}: define the new value;
+  
+   \item \texttt{Step4}: write a precise \texttt{WHERE} condition to avoid changing unintended rows.
+  \end{itemize}
+ \end{example}
+
+ \subsubsection{DELETE}
+
+ The \texttt{DELETE} command is used to remove tuples from a table.
+
+ \begin{defbox}{DELETE}
+  \texttt{DELETE} is a DML command used to remove one or more existing rows from a database table.
+ \end{defbox}
+
+ General syntax:
+
+ \begin{verbatim}
+ DELETE FROM TableName
+ WHERE condition;
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+An example is:
+
+ \begin{verbatim}
+ DELETE FROM STUDENTS
+ WHERE StudentID = 2;
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+ This command removes the row corresponding to the student whose identifier is 2.
+
+We also need to  highlight an important warning: if the \texttt{WHERE} clause is omitted, all rows are deleted from the table.
+
+\vs
+ \begin{example}
+  Suppose the table \texttt{STUDENTS} contains:
+  \begin{itemize}
+   \item \texttt{(1, 'Francesco', 'Di Serio', 'Naples')};
+   \vspace{0.2cm}
+   \item \texttt{(2, 'Antonio', 'Laudante', 'Naples')}.
+  \end{itemize}
+
+  After executing
+  \begin{verbatim}
+  DELETE FROM STUDENTS
+  WHERE StudentID = 2;
+  \end{verbatim}
+  \vspace{-0.4cm}
+
+  only the first row remains in the table.
+ 
+
+
+  If we write
+  \begin{verbatim}
+  DELETE FROM STUDENTS;
+  \end{verbatim}
+  \vspace{-0.4cm}
+
+  then every tuple of the table is removed.
+
+  A safe reasoning sequence is:
+  \begin{itemize}
+   \item \texttt{Step1}: identify the target table;
+   \item \texttt{Step2}: define exactly which rows must be removed;
+   \item \texttt{Step3}: write the correct \texttt{WHERE} condition;
+   \item \texttt{Step4}: verify that the condition does not affect more rows than expected.
+  \end{itemize}
+ \end{example}
+
+\subsection{Database Security}
+
+ \subsubsection{Security Concepts Overview}
+
+ Database security concerns the mechanisms used by a DBMS to protect data from unauthorized access or improper use.
+
+ \begin{defbox}{Database Security}
+  Database security is the set of mechanisms used to protect data, users, and operations in a database system.
+ \end{defbox}
+
+ This chapter introduces four important concepts:
+ \begin{itemize}
+  \item \textbf{Users};
+  \item \textbf{Authentication};
+  \item \textbf{Privileges};
+  \item \textbf{Roles}.
+ \end{itemize}
+
+ Another important concept to mention is the \textbf{DBA}, that is, the \textbf{Database Administrator}.
+
+ \begin{defbox}{Database Administrator (DBA)}
+  The DBA is the person responsible for managing the database system, including security, permissions, maintenance, and administration tasks.
+ \end{defbox}
+
+ \begin{defbox}{User}
+  A user is an identity recognized by the DBMS and allowed to access the database system according to specific permissions.
+ \end{defbox}
+
+ \begin{defbox}{Authentication}
+  Authentication is the process through which the DBMS verifies the identity of a user, usually by checking credentials such as username and password.
+ \end{defbox}
+
+ \begin{defbox}{Privilege}
+  A privilege is a permission to perform a specific operation on a database object, such as reading or modifying a table.
+ \end{defbox}
+
+ \begin{defbox}{Role}
+  A role is a named collection of privileges that can be assigned to one or more users.
+ \end{defbox}
+
+ In practice, database security is necessary because not every user should be allowed to do everything. For example, one user may only read data, while another user may also insert or update records.
+
+ \begin{example}
+  Consider a university database:
+  \begin{itemize}
+   \item a student may be allowed to read personal exam results;
+   \item a professor may be allowed to insert or update grades;
+   \item the DBA may be allowed to create users and manage permissions.
+  \end{itemize}
+
+  This shows why security rules are essential in a DBMS.
+ \end{example}
+
+ \subsubsection{Creating Users and Granting Privileges}
+
+ A database user can be created so that the system can uniquely identify and authenticate a person or an application accessing the DBMS.
+
+ \begin{defbox}{CREATE USER}
+  \texttt{CREATE USER} is a command used to define a new database user with specific credentials.
+ \end{defbox}
+
+ Syntax:
+
+ \begin{verbatim}
+ CREATE USER username IDENTIFIED BY password;
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+ This statement creates a new user and associates a password with that identity.
+
+We need to introduce also the idea of granting privileges.
+
+ \begin{defbox}{GRANT}
+  \texttt{GRANT} is a command used to assign privileges on database objects to users or roles.
+ \end{defbox}
+
+ Syntax:
+
+ \begin{verbatim}
+ GRANT PrivilegeList ON TableName TO username;
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+ The privileges explicitly mentioned in the slide are:
+
+ \begin{itemize}
+  \item \texttt{SELECT}: permission to read data;
+  \item \texttt{INSERT}: permission to add new rows;
+  \item \texttt{UPDATE}: permission to modify existing rows;
+  \item \texttt{DELETE}: permission to remove rows.
+ \end{itemize}
+
+ \pagebreak
+
+ \begin{example}
+  Suppose we create a user called \texttt{analyst}:
+  \begin{verbatim}
+  CREATE USER analyst IDENTIFIED BY mypassword;
+  \end{verbatim}
+  \vspace{-0.4cm}
+
+  Then we can give this user read access to the table \texttt{STUDENTS}:
+  \begin{verbatim}
+  GRANT SELECT ON STUDENTS TO analyst;
+  \end{verbatim}
+  \vspace{-0.4cm}
+
+  In this way, \texttt{analyst} can read data from \texttt{STUDENTS} but cannot automatically modify it.
+ \end{example}
+
+ \begin{example}
+  A typical workflow is:
+  \begin{itemize}
+   \item \texttt{Step1}: create the new user identity;
+   \item \texttt{Step2}: authenticate the user through credentials;
+   \item \texttt{Step3}: decide which privileges the user should have;
+   \item \texttt{Step4}: assign only the necessary permissions.
+  \end{itemize}
+ \end{example}
+
+ \subsubsection{Roles and Access Management}
+
+ Managing permissions user by user can become difficult when many users need similar privileges. For this reason, DBMSs support roles.
+
+ \begin{defbox}{Role-Based Access Management}
+  Role-based access management is an approach in which privileges are grouped into roles, and roles are then assigned to users.
+ \end{defbox}
+
+ Syntax:
+
+ \begin{verbatim}
+ CREATE ROLE RoleName;
+ GRANT PrivilegeList ON TableName TO RoleName;
+ GRANT RoleName TO username;
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+ The meaning is:
+ \begin{itemize}
+  \item first, create a role;
+  \item then, assign privileges to that role;
+  \item finally, assign the role to one or more users.
+ \end{itemize}
+
+ This simplifies administration because the DBA can manage privileges at the role level instead of repeating the same \texttt{GRANT} commands for every user.
+
+ \vs
+
+ \begin{example}
+  Suppose a university wants several professors to have the same permissions on the table \texttt{EXAMS}.
+
+  The DBA can write:
+  \begin{verbatim}
+  CREATE ROLE ProfessorRole;
+  GRANT SELECT, UPDATE ON EXAMS TO ProfessorRole;
+  GRANT ProfessorRole TO marco;
+  \end{verbatim}
+  \vspace{-0.4cm}
+
+  If another professor joins later, the DBA only needs to assign the same role to the new user, without redefining all privileges again.
+
+  The logic of role management can be summarized as:
+  \begin{itemize}
+   \item \texttt{Step1}: identify a group of users with similar responsibilities;
+   \item \texttt{Step2}: create a role representing that responsibility;
+   \item \texttt{Step3}: assign the required privileges to the role;
+   \item \texttt{Step4}: assign the role to all relevant users.
+  \end{itemize}
+ \end{example}
+
+ \subsection{Case Study: The Movies Database}
+
+ \subsubsection{Database Schema Overview}
+
+ The case study introduces a relational database for managing information about movies, directors, actors, productions, users, comments, and ratings. The schema shown in the slide is useful because it presents the entire logical organization of the database before looking at the SQL code.
+
+ \begin{defbox}{Database Schema}
+  A database schema is the overall logical structure of the database. It describes the tables, their attributes, their primary keys, and the relationships among them.
+ \end{defbox}
+
+ In this schema, the table \texttt{MOVIES} is the central relation. Around it, there are tables that describe entities connected to movies:
+ \begin{itemize}
+  \item \texttt{DIRECTORS};
+  \item \texttt{GENRES};
+  \item \texttt{PRODUCTIONS};
+  \item \texttt{ACTORS};
+  \item \texttt{USERS};
+  \item \texttt{COMMENTS};
+  \item \texttt{RATINGS};
+  \item \texttt{MOVIE\_CAST}.
+ \end{itemize}
+
+ The slide visually shows that:
+ \begin{itemize}
+  \item one movie belongs to a genre;
+  \item one movie may have a director;
+  \item one movie may have a production company;
+  \item many actors may belong to the cast of one movie;
+  \item users can write comments and ratings for movies.
+ \end{itemize}
+
+ The schema also contains both simple primary keys and composite primary keys.
+
+ \begin{defbox}{Composite Primary Key}
+  A composite primary key is a primary key made of more than one attribute. Together, those attributes uniquely identify a row.
+ \end{defbox}
+
+ For example, \texttt{MOVIE\_CAST(Movie, Actor)} uses a composite key because the pair \texttt{(Movie, Actor)} uniquely identifies a cast relation.
+
+ \begin{example}
+  We can understand the schema by following these steps:
+  \begin{itemize}
+   \item \texttt{Step1}: identify the main entity, which in this case is \texttt{MOVIES};
+   \vspace{0.2cm}
+   \item \texttt{Step2}: identify descriptive entities such as \texttt{DIRECTORS}, \texttt{GENRES}, and \texttt{ACTORS};
+   \vspace{0.2cm}
+   \item \texttt{Step3}: identify interaction tables such as \texttt{COMMENTS} and \texttt{RATINGS};
+   \vspace{0.2cm}
+   \item \texttt{Step4}: identify many-to-many bridge tables such as \texttt{MOVIE\_CAST}.
+  \end{itemize}
+ \end{example}
+
+ \subsection{Table Creation for \texttt{MOVIES}}
+
+ The \texttt{MOVIES} table is the most important table in the schema because it stores the core information about each movie.
+
+ The SQL code is:
+
+ \begin{verbatim}
+ CREATE TABLE MOVIES(
+   Code NUMBER,
+   Title VARCHAR2(500) NOT NULL,
+   Description CLOB,
+   Year INTEGER CHECK(Year>1900) NOT NULL,
+   Director INTEGER,
+   Genre INTEGER,
+   Production INTEGER,
+   Duration INTEGER DEFAULT 0,
+   Oscar CHAR(3) CHECK(Oscar='YES' OR Oscar='NO'),
+   Oscar_Year INTEGER CHECK(Oscar_Year>1900),
+   CONSTRAINT PK_MOVIES PRIMARY KEY(Code),
+   CONSTRAINT CK_MOVIES CHECK(
+     (Oscar='YES' AND Oscar_Year IS NOT NULL)
+     OR (Oscar='NO' AND Oscar_Year IS NULL)
+   )
+ );
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+ This definition introduces several important SQL concepts at the same time:
+ \begin{itemize}
+  \item data types;
+  \item \texttt{NOT NULL};
+  \item \texttt{CHECK};
+  \item \texttt{DEFAULT};
+  \item primary key constraints;
+  \item tuple-level logical consistency constraints.
+ \end{itemize}
+
+ \begin{defbox}{DEFAULT}
+  The \texttt{DEFAULT} clause specifies the value automatically assigned to an attribute if no explicit value is provided during insertion.
+ \end{defbox}
+
+ \begin{defbox}{CLOB}
+  \texttt{CLOB} stands for Character Large Object and is a data type used to store large text content.
+ \end{defbox}
+
+ The table design means:
+ \begin{itemize}
+  \item \texttt{Code} uniquely identifies the movie;
+  \item \texttt{Title} is mandatory;
+  \item \texttt{Description} can store a long text;
+  \item \texttt{Year} must be greater than 1900;
+  \item \texttt{Duration} defaults to 0 if not specified;
+  \item \texttt{Oscar} can only be \texttt{'YES'} or \texttt{'NO'};
+  \item \texttt{Oscar\_Year} must be consistent with \texttt{Oscar}.
+ \end{itemize}
+
+ The last constraint is especially interesting because it is a tuple constraint:
+ \begin{itemize}
+  \item if \texttt{Oscar = 'YES'}, then \texttt{Oscar\_Year} must not be \texttt{NULL};
+  \item if \texttt{Oscar = 'NO'}, then \texttt{Oscar\_Year} must be \texttt{NULL}.
+ \end{itemize}
+
+ \begin{example}
+  The following insertion is conceptually valid:
+  \begin{verbatim}
+  INSERT INTO MOVIES
+  VALUES (1, 'Example Movie', 'A drama', 2020, NULL, NULL, NULL, 120, 'NO', NULL);
+  \end{verbatim}
+  \vspace{-0.4cm}
+
+  It is valid because:
+  \begin{itemize}
+   \item the year is greater than 1900;
+   \vspace{0.2cm}
+   \item the title is not \texttt{NULL};
+   \vspace{0.2cm}
+   \item \texttt{Oscar = 'NO'} and therefore \texttt{Oscar\_Year} is correctly \texttt{NULL}.
+  \end{itemize}
+ \end{example}
+
+ \begin{example}
+  The following insertion is conceptually invalid:
+  \begin{verbatim}
+  INSERT INTO MOVIES
+  VALUES (2, 'Wrong Movie', 'A test', 2020, NULL, NULL, NULL, 100, 'YES', NULL);
+  \end{verbatim}
+  \vspace{-0.4cm}
+
+  It is invalid because if \texttt{Oscar = 'YES'}, then \texttt{Oscar\_Year} must contain a value.
+ \end{example}
+
+ \subsection{Table Creation for \texttt{GENRES} and \texttt{DIRECTORS}}
+
+ The next slide defines two supporting tables:
+
+ \begin{verbatim}
+ CREATE TABLE GENRES (
+   Id NUMBER,
+   Name VARCHAR2(100) NOT NULL,
+   CONSTRAINT PK_GENRES PRIMARY KEY(Id)
+ );
+
+ CREATE TABLE DIRECTORS (
+   Id NUMBER,
+   Name VARCHAR2(100) NOT NULL,
+   Surname VARCHAR2(100) NOT NULL,
+   CONSTRAINT PK_DIRECTORS PRIMARY KEY(Id)
+ );
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+ These are lookup tables. They avoid repeating the same textual information many times in the \texttt{MOVIES} table.
+
+ \begin{defbox}{Lookup Table}
+  A lookup table is a table that stores a controlled set of reference values used by other tables.
+ \end{defbox}
+
+ Instead of storing the full genre name inside every movie row, the database stores a reference to \texttt{GENRES(Id)}. The same idea is used for directors.
+
+ This design reduces redundancy and improves consistency. For example, the name of a genre such as \texttt{Thriller} is stored only once.
+
+ \begin{example}
+  A possible insertion into \texttt{GENRES} is:
+  \begin{verbatim}
+  INSERT INTO GENRES VALUES (1, 'Thriller');
+  \end{verbatim}
+  \vspace{-0.4cm}
+
+  A possible insertion into \texttt{DIRECTORS} is:
+  \begin{verbatim}
+  INSERT INTO DIRECTORS VALUES (1, 'Christopher', 'Nolan');
+  \end{verbatim}
+  \vspace{-0.4cm}
+
+  Later, a movie can reference these rows through their identifiers instead of repeating the text values.
+ \end{example}
+
+ \subsection{Table Creation for \texttt{ACTORS} and \texttt{PRODUCTIONS}}
+
+ The following slide defines two more supporting tables:
+
+ \begin{verbatim}
+ CREATE TABLE ACTORS (
+   Id NUMBER,
+   Name VARCHAR2(100) NOT NULL,
+   Surname VARCHAR2(100) NOT NULL,
+   CONSTRAINT PK_ACTORS PRIMARY KEY(Id)
+ );
+
+ CREATE TABLE PRODUCTIONS (
+   Id NUMBER,
+   Name VARCHAR2(100) NOT NULL,
+   CONSTRAINT PK_PRODUCTIONS PRIMARY KEY(Id)
+ );
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+ The logic is similar to the one used for genres and directors:
+ \begin{itemize}
+  \item \texttt{ACTORS} stores people who act in movies;
+  \item \texttt{PRODUCTIONS} stores production companies.
+ \end{itemize}
+
+ These tables separate entities from relationships. An actor exists independently of a specific movie, and a production company can be associated with many movies.
+
+ \begin{example}
+  Example insertions are:
+  \begin{verbatim}
+  INSERT INTO ACTORS VALUES (1, 'Cillian', 'Murphy');
+  INSERT INTO PRODUCTIONS VALUES (1, 'Universal Pictures');
+  \end{verbatim}
+  \vspace{-0.4cm}
+
+  Later, these identifiers can be referenced by other tables, such as \texttt{MOVIE\_CAST} or \texttt{MOVIES}.
+ \end{example}
+
+ \subsection{Table Creation for \texttt{MOVIE\_CAST} and \texttt{USERS}}
+
+ The next slide introduces two very different tables:
+
+ \begin{verbatim}
+ CREATE TABLE MOVIE_CAST (
+   Movie NUMBER,
+   Actor NUMBER,
+   CONSTRAINT PK_MOVIE_CAST PRIMARY KEY(Movie,Actor)
+ );
+
+ CREATE TABLE USERS (
+   Id NUMBER,
+   username VARCHAR2(50) UNIQUE NOT NULL,
+   password VARCHAR2(20) CHECK(LENGTH(password)>=5) NOT NULL,
+   Name VARCHAR2(100) NOT NULL,
+   Surname VARCHAR2(100) NOT NULL,
+   email VARCHAR2(80) UNIQUE,
+   CONSTRAINT PK_USERS PRIMARY KEY(Id)
+ );
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+ The table \texttt{MOVIE\_CAST} is a bridge table.
+
+ \begin{defbox}{Bridge Table}
+  A bridge table is a table used to represent a many-to-many relationship between two other tables.
+ \end{defbox}
+
+ One movie can have many actors, and one actor can act in many movies. Because of this many-to-many relationship, a separate table is needed.
+
+ The composite primary key \texttt{(Movie, Actor)} ensures that the same actor cannot be associated with the same movie more than once.
+
+ The \texttt{USERS} table stores information about platform users and introduces additional constraints:
+ \begin{itemize}
+  \item \texttt{username} must be unique and not null;
+  \item \texttt{password} must have length at least 5;
+  \item \texttt{email} must be unique, if provided.
+ \end{itemize}
+
+ \begin{example}
+  A valid insertion into \texttt{USERS} could be:
+  \begin{verbatim}
+  INSERT INTO USERS
+  VALUES (1, 'mario89', 'abcde', 'Mario', 'Rossi', 'mario@email.com');
+  \end{verbatim}
+  \vspace{-0.4cm}
+ \end{example}
+
+ \begin{example}
+  The following insertion is conceptually invalid:
+  \begin{verbatim}
+  INSERT INTO USERS
+  VALUES (2, 'anna90', 'abc', 'Anna', 'Bianchi', 'anna@email.com');
+  \end{verbatim}
+  \vspace{-0.4cm}
+
+  It is invalid because the password length is smaller than 5.
+ \end{example}
+
+ \begin{example}
+  The logic of \texttt{MOVIE\_CAST} can be read as:
+  \begin{itemize}
+   \item \texttt{Step1}: identify a movie;
+   \vspace{0.2cm}
+   \item \texttt{Step2}: identify an actor;
+   \vspace{0.2cm}
+   \item \texttt{Step3}: store the pair in \texttt{MOVIE\_CAST};
+   \vspace{0.2cm}
+   \item \texttt{Step4}: use the composite primary key to avoid duplicated associations.
+  \end{itemize}
+ \end{example}
+
+ \subsection{Table Creation for \texttt{COMMENTS} and \texttt{RATINGS}}
+
+ The next slide defines the tables used for user interaction:
+
+ \begin{verbatim}
+ CREATE TABLE COMMENTS (
+   Id NUMBER,
+   text CLOB NOT NULL,
+   Movie NUMBER,
+   UserId NUMBER,
+   comment_date DATE,
+   CONSTRAINT PK_COMMENTS PRIMARY KEY(Id)
+ );
+
+ CREATE TABLE RATINGS (
+   UserId NUMBER,
+   Movie NUMBER,
+   Vote INTEGER CHECK(Vote>=0 AND Vote<=5),
+   CONSTRAINT PK_RATINGS PRIMARY KEY(UserId,Movie)
+ );
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+ The \texttt{COMMENTS} table stores textual comments written by users about movies. The \texttt{RATINGS} table stores numeric evaluations.
+
+ The table \texttt{RATINGS} uses a composite primary key \texttt{(UserId, Movie)}. This means that one user can rate one movie only once.
+
+ \begin{defbox}{DATE}
+  The \texttt{DATE} data type is used to store calendar dates and, depending on the DBMS, possibly time information as well.
+ \end{defbox}
+
+ \begin{example}
+  A valid rating insertion could be:
+  \begin{verbatim}
+  INSERT INTO RATINGS VALUES (1, 1, 5);
+  \end{verbatim}
+  \vspace{-0.4cm}
+
+  This means that user 1 gave vote 5 to movie 1.
+ \end{example}
+
+ \begin{example}
+  The following insertion is conceptually invalid:
+  \begin{verbatim}
+  INSERT INTO RATINGS VALUES (1, 1, 7);
+  \end{verbatim}
+  \vspace{-0.4cm}
+
+  It is invalid because \texttt{Vote} must be between 0 and 5.
+ \end{example}
+
+ \subsection{Adding Foreign Key Constraints}
+
+ After the tables are created, the next slide adds the foreign key constraints through \texttt{ALTER TABLE}:
+
+ \begin{verbatim}
+ ALTER TABLE MOVIES ADD CONSTRAINT FK_MOVIES_GENRES
+ FOREIGN KEY(Genre) REFERENCES GENRES(Id) ON DELETE SET NULL;
+
+ ALTER TABLE MOVIES ADD CONSTRAINT FK_MOVIES_DIRECTORS
+ FOREIGN KEY(Director) REFERENCES DIRECTORS(Id);
+
+ ALTER TABLE MOVIES ADD CONSTRAINT FK_MOVIES_PRODUCTIONS
+ FOREIGN KEY(Production) REFERENCES PRODUCTIONS(Id);
+
+ ALTER TABLE COMMENTS ADD CONSTRAINT FK_COMMENTS_MOVIES
+ FOREIGN KEY(Movie) REFERENCES MOVIES(Code) ON DELETE CASCADE;
+
+ ALTER TABLE COMMENTS ADD CONSTRAINT FK_COMMENTS_USERS
+ FOREIGN KEY(UserId) REFERENCES USERS(Id) ON DELETE SET NULL;
+
+ ALTER TABLE RATINGS ADD CONSTRAINT FK_RATINGS_USERS
+ FOREIGN KEY(UserId) REFERENCES USERS(Id) ON DELETE SET NULL;
+
+ ALTER TABLE RATINGS ADD CONSTRAINT FK_RATINGS_MOVIES
+ FOREIGN KEY(Movie) REFERENCES MOVIES(Code) ON DELETE CASCADE;
+
+ ALTER TABLE MOVIE_CAST ADD CONSTRAINT FK_MOVIE_CAST_MOVIES
+ FOREIGN KEY(Movie) REFERENCES MOVIES(Code) ON DELETE CASCADE;
+
+ ALTER TABLE MOVIE_CAST ADD CONSTRAINT FK_MOVIE_CAST_ACTORS
+ FOREIGN KEY(Actor) REFERENCES ACTORS(Id);
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+ This slide is very important because it shows that table creation and relationship definition can be separated into two phases:
+ \begin{itemize}
+  \item first, create the tables;
+  \item then, add the foreign keys.
+ \end{itemize}
+
+ \begin{defbox}{ON DELETE CASCADE}
+  \texttt{ON DELETE CASCADE} means that when a referenced row is deleted, all dependent rows are automatically deleted as well.
+ \end{defbox}
+
+ \begin{defbox}{ON DELETE SET NULL}
+  \texttt{ON DELETE SET NULL} means that when a referenced row is deleted, the foreign key value in dependent rows is automatically set to \texttt{NULL}.
+ \end{defbox}
+
+ These actions are used depending on the intended semantics:
+ \begin{itemize}
+  \item if a movie is deleted, related comments, ratings, and cast associations are also removed through \texttt{CASCADE};
+  \item if a user is deleted, comments and ratings can remain, but the user reference becomes \texttt{NULL};
+  \item if a genre is deleted, the movie can remain, but its \texttt{Genre} becomes \texttt{NULL}.
+ \end{itemize}
+
+ \begin{example}
+  Suppose movie 10 is deleted, and \texttt{COMMENTS(Movie)} uses \texttt{ON DELETE CASCADE}. Then all comments referring to movie 10 are automatically removed too.
+ \end{example}
+
+ \begin{example}
+  Suppose genre 3 is deleted, and \texttt{MOVIES(Genre)} uses \texttt{ON DELETE SET NULL}. Then all movies that were linked to genre 3 remain in the database, but their \texttt{Genre} attribute becomes \texttt{NULL}.
+ \end{example}
+
+\section{Exercises and Solutions}
+
+ \subsection{Exercise Statements}
+
+ The exercise slide asks the student to complete three tasks:
+ \begin{itemize}
+  \item create the tables \texttt{MOVIES}, \texttt{GENRES}, and \texttt{DIRECTORS} with the correct intra-relational constraints;
+  \item add the correct foreign key constraints;
+  \item insert two movies: \texttt{Oppenheimer} and \texttt{Barbie}.
+ \end{itemize}
+
+ The slide also explicitly warns to pay attention to the insertion order.
+
+ This is a key database principle: when foreign keys exist, referenced rows must usually be inserted before dependent rows.
+
+ \begin{example}
+  The correct insertion order is:
+  \begin{itemize}
+   \item \texttt{Step1}: insert the genres first;
+   \vspace{0.2cm}
+   \item \texttt{Step2}: insert the directors;
+   \vspace{0.2cm}
+   \item \texttt{Step3}: insert the movies, because movies depend on genres and directors.
+  \end{itemize}
+
+  If we tried to insert the movies first, the foreign key references could fail.
+ \end{example}
+
+ \subsection{Solution Ex.1: Slides 32--33}
+
+ The first solution creates the required tables.
+
+ First, \texttt{GENRES} and \texttt{DIRECTORS}:
+
+ \begin{verbatim}
+ CREATE TABLE GENRES (
+   Id NUMBER,
+   Name VARCHAR2(100) NOT NULL,
+   CONSTRAINT PK_GENRES PRIMARY KEY (Id)
+ );
+
+ CREATE TABLE DIRECTORS (
+   Id NUMBER,
+   Name VARCHAR2(100) NOT NULL,
+   Surname VARCHAR2(100) NOT NULL,
+   CONSTRAINT PK_DIRECTORS PRIMARY KEY (Id)
+ );
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+ Then, \texttt{MOVIES}:
+
+ \begin{verbatim}
+ CREATE TABLE MOVIES (
+   Code NUMBER,
+   Title VARCHAR2(500) NOT NULL,
+   Description CLOB,
+   Year NUMBER NOT NULL,
+   Director NUMBER,
+   Genre NUMBER,
+   Duration NUMBER,
+   CONSTRAINT PK_MOVIES PRIMARY KEY (Code),
+   CONSTRAINT CK_MOVIES_YEAR CHECK (Year > 1900),
+   CONSTRAINT CK_MOVIES_DURATION CHECK (Duration > 0)
+ );
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+ Compared with the earlier full schema, this simplified exercise version only keeps the constraints that are directly relevant to the task.
+
+ \begin{example}
+  A valid movie insertion for this simplified schema would require:
+  \begin{itemize}
+   \item a unique code;
+   \vspace{0.2cm}
+   \item a non-null title;
+   \vspace{0.2cm}
+   \item a year greater than 1900;
+   \vspace{0.2cm}
+   \item a duration greater than 0.
+  \end{itemize}
+ \end{example}
+
+ \subsection{Solution Ex.2}
+
+ The second solution adds the foreign keys:
+
+ \begin{verbatim}
+ ALTER TABLE MOVIES
+ ADD CONSTRAINT FK_MOVIES_DIRECTORS
+ FOREIGN KEY (Director) REFERENCES DIRECTORS(Id);
+
+ ALTER TABLE MOVIES
+ ADD CONSTRAINT FK_MOVIES_GENRES
+ FOREIGN KEY (Genre) REFERENCES GENRES(Id);
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+ These constraints complete the relational connections required by the exercise.
+
+ \begin{example}
+  Once these constraints exist, a movie can store:
+  \begin{itemize}
+   \item the identifier of a director in \texttt{Director};
+   \vspace{0.2cm}
+   \item the identifier of a genre in \texttt{Genre}.
+  \end{itemize}
+
+  But those identifiers must already exist in the referenced tables.
+ \end{example}
+
+ \subsection{Solution Ex.3}
+
+ The third solution inserts the actual data:
+
+ \begin{verbatim}
+ -- Insert genres
+ INSERT INTO GENRES VALUES (1, 'Thriller');
+ INSERT INTO GENRES VALUES (2, 'Comedy');
+
+ -- Insert directors
+ INSERT INTO DIRECTORS VALUES (1, 'Christopher', 'Nolan');
+ INSERT INTO DIRECTORS VALUES (2, 'Greta', 'Gerwig');
+
+ -- Insert movies
+ INSERT INTO MOVIES
+ VALUES (1, 'Oppenheimer', NULL, 2023, 1, 1, 180);
+
+ INSERT INTO MOVIES
+ VALUES (2, 'Barbie', NULL, 2023, 2, 2, 114);
+ \end{verbatim}
+ \vspace{-0.4cm}
+
+ This is a good example of consistent insertion order:
+ \begin{itemize}
+  \item genres are inserted first;
+  \item directors are inserted next;
+  \item movies are inserted last, because they reference both genres and directors.
+ \end{itemize}
+
+ \begin{example}
+  The inserted data encode the following meaning:
+  \begin{itemize}
+   \item \texttt{Oppenheimer} is a 2023 thriller directed by Christopher Nolan;
+   \vspace{0.2cm}
+   \item \texttt{Barbie} is a 2023 comedy directed by Greta Gerwig.
+  \end{itemize}
+
+  In the movie rows:
+  \begin{itemize}
+   \item \texttt{Director = 1} refers to Christopher Nolan;
+   \vspace{0.2cm}
+   \item \texttt{Genre = 1} refers to Thriller;
+   \vspace{0.2cm}
+   \item \texttt{Director = 2} refers to Greta Gerwig;
+   \vspace{0.2cm}
+   \item \texttt{Genre = 2} refers to Comedy.
+  \end{itemize}
+ \end{example}
+
+ \subsection{Final Conceptual Summary}
+
+ This case study is very useful because it shows a complete relational design process:
+ \begin{itemize}
+  \item identify the entities;
+  \item create the corresponding tables;
+  \item define primary keys and intra-relational constraints;
+  \item add foreign keys to connect the relations;
+  \item insert data in the correct order.
+ \end{itemize}
+
+ \begin{example}
+  A general workflow for designing a relational database can be summarized as:
+  \begin{itemize}
+   \item \texttt{Step1}: identify the main entities of the application domain;
+   \vspace{0.2cm}
+   \item \texttt{Step2}: create one table for each main entity;
+   \vspace{0.2cm}
+   \item \texttt{Step3}: define primary keys and local constraints;
+   \vspace{0.2cm}
+   \item \texttt{Step4}: define foreign keys to represent relationships;
+   \vspace{0.2cm}
+   \item \texttt{Step5}: populate the database while respecting the dependency order.
+  \end{itemize}
+ \end{example}
+
+ This is exactly the reasoning pattern followed by the Movies Database example.
+
+
+
+

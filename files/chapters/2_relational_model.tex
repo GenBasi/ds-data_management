@@ -1,0 +1,575 @@
+
+%!TEX root = ../main.tex
+
+\section{Relational Model}
+
+\subsection{Introduction to the Relational Model}
+The relational model is one of the most fundamental concepts in database theory. It provides a structured, mathematically sound method for organizing data into relations, which are commonly visualized as tables.
+
+\begin{defbox}{Relational Model}
+A method of organizing data into relations (tables) based on mathematical principles, providing both a rigorous foundation and an intuitive structure.
+\end{defbox}
+
+\subsubsection{Origins and Success of the Relational Model}
+Introduced by \textbf{E. F. Codd} in 1970, the relational model was designed to overcome the limitations of older architectures by offering a high level of abstraction and guaranteeing strong data independence.
+
+\begin{defbox}{Data Independence}
+The ability to separate the logical description of data from the physical way it is stored or managed on disk.
+\end{defbox}
+
+
+
+The model's widespread adoption is due to its combination of two concepts:
+\begin{itemize}
+    \item The \textbf{Relation}: The formal, mathematically precise foundation from set theory.
+    \item The \textbf{Table}: The intuitive, user-friendly graphical representation of the relation.
+\end{itemize}
+
+\subsubsection{Mathematical Definition of a Relation}
+Understanding the underlying mathematics is crucial for advanced Data Management. Given $n$ sets (called domains) $D_1, D_2, \dots, D_n$ where $n > 0$, their Cartesian product is:
+$$D_1 \times D_2 \times \dots \times D_n$$
+
+\begin{defbox}{Cartesian Product}
+The set of all possible $n$-tuples $(v_1, v_2, \dots, v_n)$ obtained by taking exactly one value from each domain $D_i$. It represents every possible combination of values.
+\end{defbox}
+
+\begin{defbox}{Mathematical Relation}
+A \textbf{relation} $r$ on domains $D_1, D_2, \dots, D_n$ is a subset of the Cartesian product $D_1 \times D_2 \times \dots \times D_n$. 
+\end{defbox}
+
+\textbf{Key Concept:} The Cartesian product generates \emph{every} theoretical combination, but a relation isolates only the valid, meaningful combinations that represent truth in the real world.
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Cartesian Product vs. Relation}}
+
+Suppose: 
+\begin{itemize}
+  \item Domain 1 ($D_1$) is \texttt{Size} = \{Small, Large\}
+  \item  Domain 2 ($D_2$) is \texttt{Color} = \{Red, Blue\}.
+\end{itemize}
+
+The \textbf{Cartesian Product} ($D_1 \times D_2$) generates 4 combinations: (Small, Red), (Small, Blue), (Large, Red), (Large, Blue).\\
+However, if a store only sells Small Red shirts and Large Blue shirts, the \textbf{Relation} modeling the inventory is just a subset: \{(Small, Red), (Large, Blue)\}.
+\end{example}
+
+\subsubsection{Domains, Degree, and Cardinality}
+To fully define a relation, you must establish its degree and its cardinality.
+
+\begin{defbox}{Domain}
+A set of valid values that can appear in a specific position of a relation. Domains can be of different data types (strings, numbers, dates).  
+\end{defbox}
+
+While the stored table is finite, the conceptual domain can be infinite (e.g., all possible surnames).
+
+\begin{defbox}{Degree}
+The number of domains (or columns) in a relation. It is always a finite number.
+\end{defbox}
+
+\begin{defbox}{Cardinality}
+The number of tuples (rows) currently contained in the relation. A relation can contain zero, one, or many tuples.
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Degree and Cardinality}}
+
+Consider a \texttt{STUDENTS} table with the columns: \texttt{StudentID}, \texttt{Name}, \texttt{Age}.\\
+If the table currently holds records for 50 different students:\\
+- The \textbf{Degree} is 3 (because there are 3 columns).\\
+- The \textbf{Cardinality} is 50 (because there are 50 rows).
+\end{example}
+
+\subsubsection{Properties of a Relation}
+Because relations are grounded in mathematical sets, they strictly adhere to the following properties:
+
+\begin{enumerate}
+\item \textbf{Unordered Tuples}: 
+There is no inherent order among the tuples in a relation. Changing the physical order of the rows does not alter the relation itself.
+
+\vspace{0.2cm}
+
+\item \textbf{Distinct Tuples}: 
+Duplicate tuples are strictly prohibited. Every row in a relation must be entirely unique.
+\vs
+
+\item \textbf{Positional vs. Attribute-Based Correspondence}: 
+In pure mathematics, values in a tuple are identified solely by their position (e.g., "column 1"). In modern relational databases, this is replaced by the use of attributes.
+\end{enumerate}
+
+
+\subsubsection{Attributes and Tuples}
+Relying strictly on the position of data is rigid and error-prone. The relational model improves upon the mathematical definition by assigning names to domains.
+
+\begin{defbox}{Attribute}
+A descriptive name assigned to a domain within a relation, used to explicitly identify the role and meaning of that data (e.g., using \texttt{Nationality} instead of "position 4").
+\end{defbox}
+
+\begin{defbox}{Tuple}
+A single record (row) within a relation, consisting of a set of values securely mapped to their corresponding attributes.
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Attributes making Position Irrelevant}}
+
+Instead of storing a tuple rigidly as \texttt{('Mario', 'Rossi', 'Italy')}, attributes map the data: \texttt{\{Name: 'Mario', Surname: 'Rossi', Nationality: 'Italy'\}}. 
+
+Because of this mapping, a query asking for \texttt{Nationality} will return 'Italy' regardless of whether the \texttt{Nationality} column is the first, second, or third column in the database table.
+\end{example}
+
+By using attributes, the order of columns becomes irrelevant, making the database schema much easier to read, query, and maintain.
+
+\subsection{Relations, Tables, Schema, and Instance}
+While the relational model is grounded in mathematical set theory, it is most commonly visualized using tables because they are intuitive and easy to read.
+
+\subsubsection{Tables vs. Relations}
+A relation naturally maps to a table structure:
+\begin{itemize}
+    \item Each \textbf{row} corresponds to a tuple.
+    \item Each \textbf{column} corresponds to an attribute.
+\end{itemize}
+
+\begin{defbox}{Table Representation of a Relation}
+A visual representation where data is organized in rows and columns. However, a table only represents a true relational model if it respects the mathematical properties: tuples must be unordered and duplicate rows are strictly prohibited.
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Invalid Table vs. Valid Relation}}
+
+If an Excel spreadsheet contains two identical rows for the same customer, it is just a table. To be a valid \textbf{relation} in a database, one of those duplicate rows must be removed, or a unique identifier (like a Customer ID) must be added to make them distinct.
+\end{example}
+
+\subsubsection{Relation Schema and Instance}
+To work with databases, we must strictly separate the \textit{structure} of the data from the \textit{actual data} itself.
+
+\begin{defbox}{Relation Schema}
+The structural blueprint of a relation. Given a set of attribute names $X = \{A_1, A_2, \dots, A_n\}$, a relation schema $R$ is written as:
+$$R(X) = R(A_1, A_2, \dots, A_n)$$
+\end{defbox}
+
+\begin{defbox}{Instance of a Relation Schema}
+The actual set of tuples (the data) stored in the relation at a specific moment in time. 
+\end{defbox}
+\pagebreak
+
+\begin{example}{\textbf{Example: Schema vs. Instance}}
+
+\textbf{Schema:} 
+
+\texttt{AUTHOR(AuthorID, Name, Surname, Nationality)}
+
+The schema tells us \textit{what kind} of data we can store. 
+
+\textbf{Instance:} 
+
+\texttt{(001, 'Pedro', 'Almodovar', 'Spain')} 
+
+\texttt{(002, 'Federico', 'Fellini', 'Italy')}
+
+The instance is the actual data existing in the database right now.
+\end{example}
+
+\subsection{Incomplete Information and the NULL Value}
+Relational databases use rigid structures: every tuple in a relation must have the exact same number of columns. However, in the real world, information is often missing. 
+
+\begin{defbox}{Incomplete Information}
+Occurs when the value for one or more attributes in a tuple is unavailable or undefined.
+\end{defbox}
+
+To solve this without inserting fake or misleading values (like writing "0" or "N/A"), the relational model extends its domains to include a special marker.
+
+\begin{defbox}{NULL}
+A special, abstract marker used in databases to explicitly represent the absence of information.
+\end{defbox}
+
+\textbf{The Three Meanings of NULL}
+
+Depending on the context, a \texttt{NULL} value can mean:
+\begin{enumerate}
+    \item \textbf{Unknown:} The value exists in reality, but we don't know it yet.
+    \item \textbf{Not Applicable:} The value does not and cannot exist for this specific record.
+    \item \textbf{Ambiguous:} We lack enough context to know if the value is unknown or not applicable.
+\end{enumerate}
+
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: The Context of NULL}}
+
+Imagine a \texttt{UNIVERSITY\_PEOPLE} table with columns: \texttt{Name}, \texttt{Role}, \texttt{MobilePhone}, \texttt{OfficePhone}.
+
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Name} & \textbf{Rule} & \textbf{MobilePhone} & \textbf{OfficePhone} \\ \hline
+Giacomo   & STUD & 335/123123 & NULL        \\ \hline
+Antonio   & PROF & 335/123131 & 081/7683826 \\ \hline
+Marta     & STUD & NULL       & NULL        \\ \hline
+Annarita  & NULL & 334/123123 & NULL        \\ \hline
+\end{tabular}
+\end{table}
+
+
+\begin{itemize}
+    \item \textbf{Marta (Professor):} Her \texttt{MobilePhone} is \texttt{NULL}. Meaning: \textbf{Unknown}. (She surely has a phone, but we don't have the number).
+    \item \textbf{Giacomo (Student):} His \texttt{OfficePhone} is \texttt{NULL}. Meaning: \textbf{Not Applicable}. (Students are not assigned offices).
+    \item \textbf{Annarita (Role NULL):} Her \texttt{OfficePhone} is \texttt{NULL}. Meaning: \textbf{Ambiguous}. (Since we don't know her role, we don't know if she is supposed to have an office or not).
+\end{itemize}
+\end{example}
+
+\subsection{Integrity Constraints and Relational Databases}
+A database cannot accept random data; it must accurately reflect the rules of the real-world domain it models.
+
+\begin{defbox}{Integrity Constraint (IC)}
+A strict rule that every instance of a database must satisfy to ensure the data remains consistent, valid, and logical. 
+\end{defbox}
+
+Moving from a single table to the entire database, we define the complete environment:
+
+\begin{defbox}{Database Schema}
+The global structure of the database, consisting of:
+\begin{itemize}
+    \item The database name.
+    \item The set of all relation schemas $R_1(X_1), R_2(X_2), \dots, R_n(X_n)$.
+    \item The comprehensive set of all Integrity Constraints ($IC$).
+\end{itemize}
+\end{defbox}
+
+\begin{defbox}{Legal Instance}
+A database instance (the current state of all tables) is considered a \textbf{legal instance} if, and only if, it satisfies every single integrity constraint defined in the schema.
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Legal vs. Illegal Instance}}
+
+Suppose an Integrity Constraint states: \texttt{Age >= 18}.\\
+If you try to insert the tuple \texttt{('Mario', 16)}, the DBMS will reject the transaction because it would create an \textbf{illegal instance}. The database only accepts data that keeps the system in a legal state.
+\end{example}
+
+\subsection{Intrarelational Constraints}
+
+In a relational database, data must obey specific rules to accurately reflect the real world. These rules are divided into two main categories:
+
+\begin{defbox}{Intrarelational Constraint}
+A rule that must be satisfied strictly within a \textbf{single relation} (table).
+\end{defbox}
+
+\begin{defbox}{Interrelational Constraint}
+A rule that involves data spread across \textbf{two or more relations}.
+\end{defbox}
+
+Focusing on \textbf{Intrarelational Constraints}, they are further divided into three types depending on their scope:
+\begin{itemize}
+    \item \textbf{Domain Constraints} (rules for a single value).
+    \item \textbf{Tuple Constraints} (rules involving multiple values in the same row).
+    \item \textbf{Key Constraints} (rules enforcing uniqueness across the whole table).
+\end{itemize}
+
+\subsubsection{Domain and Tuple Constraints}
+
+\begin{defbox}{Domain Constraint}
+A rule that restricts the allowed values of a single, specific attribute.
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Domain Constraint}}
+
+In a \texttt{UNIVERSITY\_EXAMS} table, the grade must be between 18 and 30: 
+$$18 \leq grade \leq 30$$
+The DBMS will reject an insert with a grade of 15 or 33 because it violates this domain constraint.
+\end{example}
+
+\begin{defbox}{Tuple Constraint}
+A rule that evaluates the logical relationship between two or more attributes within the \textbf{same tuple} (row).
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Tuple Constraint}}
+
+In the same \texttt{UNIVERSITY\_EXAMS} table, a student can only get \textit{Honors} if their grade is exactly 30. 
+
+Logical condition: $(\textit{honors} \neq \texttt{'YES'}) \lor (\textit{grade} = 30)$.
+
+The DBMS looks at the whole row: if it sees \texttt{grade = 28} and \texttt{honors = 'YES'}, the transaction is aborted.
+\end{example}
+
+\subsubsection{Tuple Notation}
+To define mathematical rules and keys formally, we need a precise way to refer to specific data points inside a tuple.
+
+\begin{defbox}{Tuple Attribute Notation}
+Given a tuple $t$, the notation $t[A]$ returns the specific \textbf{value} of attribute $A$ for that tuple.
+\end{defbox}
+
+\begin{defbox}{Tuple Restriction Notation}
+Given a tuple $t$ and a subset of attributes $Y$, the notation $t[Y]$ returns a smaller \textbf{tuple} containing only the values corresponding to the attributes in $Y$.
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Tuple Notation}}
+
+Let $t$ be a row in a \texttt{STUDENTS} table:\\
+$t = \texttt{('Mario', 'Rossi', 'Engineering', 25)}$\\
+\begin{itemize}
+    \item $t[\text{Surname}]$ returns the value \texttt{'Rossi'}.
+    \item $t[\text{Name}, \text{Age}]$ returns the sub-tuple \texttt{('Mario', 25)}.
+\end{itemize}
+\end{example}
+
+\subsection{Superkeys, Keys, and Primary Keys}
+A database must be able to uniquely identify every single row. It does this through the concept of keys.
+
+\begin{defbox}{Superkey (SK)}
+A subset of attributes within a relation schema that can \textbf{uniquely identify} every tuple. In any valid database instance, no two rows will ever have the exact same values for these attributes.
+\end{defbox}
+
+Because a table cannot have duplicate rows (Property 2 of relations), the combination of \textbf{all} columns is always a default Superkey. However, Superkeys often contain unnecessary, extra columns. 
+
+\begin{defbox}{Key (or Candidate Key)}
+A \textbf{minimal} superkey. It is a superkey where, if you remove even a single attribute from it, it loses its ability to uniquely identify rows.
+\end{defbox}
+
+\begin{defbox}{Primary Key (PK)}
+The single \textbf{Key} chosen by the database designer to act as the main, official identifier for tuples in that relation. 
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Superkeys vs Keys}}
+
+Table: \texttt{STUDENT(ID, Name, Surname, BirthDate, DegreeProgram)}
+
+\begin{itemize}
+    \item $\{\text{ID}, \text{Name}\}$ is a \textbf{Superkey} (it guarantees uniqueness, but \texttt{Name} is redundant).
+    \item $\{\text{ID}\}$ is a \textbf{Key} (minimal: if you remove \texttt{ID}, you have nothing left).
+    \item $\{\text{Name}, \text{Surname}, \text{BirthDate}\}$ is also a \textbf{Key} (assuming no two people with the same name are born on the same day).
+    \item The designer officially selects \texttt{ID} as the \textbf{Primary Key}.
+\end{itemize}
+\end{example}
+
+\subsubsection{Entity Integrity}
+Once a Primary Key is established, it becomes the backbone of the relation and must obey a strict, universal rule.
+
+\begin{defbox}{Entity Integrity Rule}
+No attribute participating in the \textbf{Primary Key} of a base relation is allowed to accept a \texttt{NULL} value.
+\end{defbox}
+
+\textbf{Why this matters for Data Management:}
+If a Primary Key could be \texttt{NULL}, we would have a record that cannot be uniquely identified, searched for, or referenced by other tables. Therefore, a relational DBMS physically blocks the insertion of any row that has a missing Primary Key.
+
+\subsection{Interrelational Constraints}
+In a well-designed database, information is distributed across multiple relations to reduce redundancy and improve data organization. However, splitting data creates the need for rules to maintain correct and logical connections between these separate tables.
+
+\begin{defbox}{Interrelational Constraint}
+A rule that involves more than one relation, ensuring that the data distributed across different tables remains logically connected and consistent.
+\end{defbox}
+
+\subsubsection{Foreign Keys}
+To connect data split across different tables, the relational model uses a specific linking mechanism.
+
+\begin{defbox}{Foreign Key (FK)}
+An attribute (or set of attributes) in one relation whose values strictly refer to the \textbf{Primary Key} of another relation.
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Relational Bridge with Foreign Keys}}
+
+Consider a university database where information is divided to avoid redundancy. The \texttt{EXAMS} table acts as a \textit{bridge} between \texttt{STUDENTS} and \texttt{COURSES}.
+
+\pagebreak
+
+\textbf{Referenced Table 1: STUDENTS} (Primary Key: \texttt{Matricola})
+\begin{center}
+\begin{tabular}{|c|l|l|}
+\hline
+\textbf{Matricola} & \textbf{Name} & \textbf{Surname} \\
+\hline
+150 & Alex & Rossi \\
+151 & Martina & Bianchi \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.3cm}
+\textbf{Referenced Table 2: COURSES} (Primary Key: \texttt{Code})
+\begin{center}
+\begin{tabular}{|c|l|}
+\hline
+\textbf{Code} & \textbf{CourseName} \\
+\hline
+TSI & Information Systems \\
+A1 & Data Analysis \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.3cm}
+\textbf{Referencing Table: EXAMS}
+\begin{center}
+\begin{tabular}{|c|c|c|l|}
+\hline
+\textbf{matStudent (FK)} & \textbf{courseCode (FK)} & \textbf{Date} & \textbf{Grade} \\
+\hline
+150 & TSI & 2026-06-10 & 28 \\
+151 & A1  & 2026-06-12 & 30 \\
+\hline
+\end{tabular}
+\end{center}
+
+\vs
+In the \texttt{EXAMS} table, \texttt{matStudent} is a foreign key that references \texttt{STUDENTS.Matricola}, and \texttt{courseCode} is a foreign key that references \texttt{COURSES.Code}.
+\end{example}
+
+\subsubsection{Referential Integrity}
+The presence of a Foreign Key alone is not enough; the database must enforce a strict rule to guarantee those keys point to actual, existing data.
+
+\begin{defbox}{Referential Integrity}
+A fundamental rule stating that for every non-null Foreign Key value in a referencing table, there \textbf{must exist} a corresponding, identical Primary Key value in the referenced table.
+\end{defbox}
+
+In simpler terms: a database cannot contain "orphan" references. If Table A states "this record belongs to Object X in Table B", then Object X must genuinely exist in Table B. Alternatively, the Foreign Key can be \texttt{NULL} (if the domain allows it), which simply means "no assignment yet."
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Enforcing Referential Integrity}}
+
+Using the tables from the previous example:
+\begin{itemize}
+    \item \textbf{Legal Insert:} Adding an exam for \texttt{matStudent = 150} and \texttt{courseCode = A1}. (The DBMS accepts this because student 150 exists and course A1 exists).
+    \item \textbf{Illegal Insert:} Adding an exam for \texttt{matStudent = 999}. The DBMS will \textbf{abort} the transaction because student 999 does not exist in the \texttt{STUDENTS} table, which violates referential integrity.
+\end{itemize}
+\end{example}
+
+
+\subsection{A Complete Example: Players and Teams}
+To see how relations, constraints, and keys work together in a realistic scenario, let's analyze a small sports database.
+
+\subsubsection{Database Schema}
+The database consists of two relations:
+\begin{itemize}
+    \item \textbf{Player}(\texttt{CardCode}, \texttt{Name}, \texttt{Surname}, \texttt{Role}, \texttt{Age}, \texttt{Team})
+    \item \textbf{Team}(\texttt{Name}, \texttt{TeamColors}, \texttt{FoundationYear}, \texttt{Stadium})
+\end{itemize}
+
+\subsubsection{Applying Integrity Constraints}
+To prevent "garbage data" from entering the system, the schema enforces strict rules.
+
+\begin{defbox}{Domain Constraint}
+A rule restricting the allowed values of a specific attribute to a valid set or numeric range.
+\end{defbox}
+
+\vspace{0.2cm}
+\begin{example}{\textbf{Example: Domain Constraints on the Schema}}
+\begin{itemize}
+    \item \textbf{Player.Role:} Must belong to $\{\text{attacker}, \text{defender}, \text{goalkeeper}, \text{midfielder}\}$. An insert with role `professore` will be rejected.
+    \item \textbf{Player.Age:} Must satisfy $0 \leq \text{Age} \leq 100$. An insert with age `180` will be rejected.
+    \item \textbf{Team.FoundationYear:} Must be between $1800$ and $2005$. An insert with year `1200` will be rejected.
+\end{itemize}
+\end{example}
+
+\begin{defbox}{Invalid Tuple}
+A tuple is instantly rejected (considered invalid) if it violates even a single integrity or domain constraint defined in the schema.
+\end{defbox}
+
+\subsubsection{Choosing Keys}
+\textbf{In the Player table:}
+\begin{itemize}
+    \item \texttt{CardCode} uniquely identifies each player, making it an excellent \textbf{Primary Key}.
+    \item The pair \texttt{\{Name, Surname\}} might also be unique in this specific small dataset, making it an alternative (candidate) key, but \texttt{CardCode} is much safer.
+\end{itemize}
+
+\textbf{Establishing the Link (Foreign Key):}
+The \texttt{Team} attribute in the \textbf{Player} table points to the \texttt{Name} attribute in the \textbf{Team} table. This \textbf{Foreign Key} ensures that a player cannot be assigned to a team that does not exist in the database.
+
+
+\subsubsection{Table examples}
+
+\vspace{0.2cm}
+\textbf{Relation: TEAM}
+
+\vs
+\begin{center}
+\begin{tabular}{|l|l|c|l|}
+\hline
+\textbf{Name} & \textbf{TeamColors} & \textbf{FoundationYear} & \textbf{Stadium} \\
+\hline
+Napoli   & Blue-White   & 1926 & Diego Armando Maradona Stadium \\
+Milan    & Red-Black    & 1899 & San Siro \\
+Juventus & Black-White  & 1897 & Allianz Stadium \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.3cm}
+\textbf{Relation: PLAYER}
+
+\vs
+\begin{center}
+\begin{tabular}{|c|l|l|l|c|l|}
+\hline
+\textbf{CardCode} & \textbf{Name} & \textbf{Surname} & \textbf{Role} & \textbf{Age} & \textbf{Team} \\
+\hline
+101 & Luca   & Rossi   & attacker    & 24 & Napoli   \\
+102 & Marco  & Bianchi & defender    & 27 & Milan    \\
+103 & Paolo  & Verdi   & midfielder  & 22 & Juventus \\
+104 & Andrea & Neri    & goalkeeper  & 30 & Napoli   \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Introduction to SQL}
+The theoretical relational model is implemented in the real world using SQL.
+
+\begin{defbox}{SQL (Structured Query Language)}
+The standard, declarative language used to define (DDL), query, and manipulate (DML) relational databases.
+\end{defbox}
+
+\textbf{Declarative Language} is a programming paradigm where the user specifies \textbf{what} result they want, and the system (the DBMS) figures out \textbf{how} to get it. You do not write low-level loops to search for data.
+
+
+\subsubsection{The CREATE TABLE Command (DDL)}
+To translate a theoretical Relation Schema into a physical database table, SQL uses the \texttt{CREATE TABLE} command.
+
+\begin{defbox}{CREATE TABLE}
+The core SQL DDL command used to create a new relation, specifying its attributes, data types, and all internal and external constraints.
+\end{defbox}
+
+\subsubsection{SQL Data Types}
+When defining columns, you must restrict what kind of data they hold:
+\begin{itemize}
+    \item \textbf{Numeric:} \texttt{int}, \texttt{smallint}, \texttt{numeric}, \texttt{real}, \texttt{float}
+    \item \textbf{Strings:} \texttt{char(n)} (fixed length), \texttt{varchar(n)} (variable length)
+    \item \textbf{Temporal:} \texttt{date}, \texttt{time}, \texttt{interval}
+\end{itemize}
+
+\subsubsection{Defining Constraints in SQL}
+SQL syntax maps directly to relational constraints:
+\begin{itemize}
+    \item \texttt{NOT NULL}: Enforces that the attribute must have a value.
+    \item \texttt{UNIQUE}: Enforces that values in this column cannot repeat.
+    \item \texttt{PRIMARY KEY}: Sets the main identifier (automatically applies \texttt{UNIQUE} and \texttt{NOT NULL}).
+    \item \texttt{FOREIGN KEY}: Establishes referential integrity to another table.
+\end{itemize}
+
+
+\subsubsection{Complete SQL Example: The EXAMS Table}
+Here is how theory becomes code. We want to create the bridge table \texttt{EXAMS} that links students to courses.
+
+\begin{example}{\textbf{Example: Translating Theory to SQL}}
+\begin{verbatim}
+CREATE TABLE EXAMS (
+    matStudent char(10),
+    courseCode char(10),
+    grade numeric(2),
+    examDate date,
+    
+    -- Intrarelational Constraint (Tuple Uniqueness)
+    PRIMARY KEY (matStudent, courseCode),
+    
+    -- Interrelational Constraints (Referential Integrity)
+    FOREIGN KEY (matStudent) REFERENCES STUDENTS(studentID),
+    FOREIGN KEY (courseCode) REFERENCES COURSES(code) ON DELETE SET NULL
+);
+\end{verbatim}
+\textbf{Key Takeaways from this Code:}
+\begin{itemize}
+    \item \textbf{Composite Primary Key:} The primary key is made of two columns \texttt{(matStudent, courseCode)}. A student can take many exams, and a course has many students, but a student takes a specific course exam only once (or at least, that's what this specific schema models).
+    \item \textbf{Referential Integrity:} The database will physically block you from inserting an exam for a \texttt{matStudent} that isn't already in the \texttt{STUDENTS} table.
+\end{itemize}
+\end{example}
